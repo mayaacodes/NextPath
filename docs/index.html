@@ -3,11 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NextPath | Age-aware support communities</title>
-    <meta
-      name="description"
-      content="NextPath helps people find age-appropriate support communities, local and global resources, and trusted groups based on what they're going through."
-    />
+    <title>NextPath | Support Communities</title>
+    <meta name="description" content="Welcome to NextPath. Find age-appropriate support communities, local groups, and resources that match what you're going through." />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -17,121 +14,134 @@
           <div class="brand-mark">N</div>
           <span class="brand-name">NextPath</span>
         </div>
-
-        <nav class="nav" aria-label="Main navigation">
-          <a href="#join">JOIN</a>
-          <a href="#global">GLOBAL</a>
-          <a href="#local">LOCAL</a>
-        </nav>
+        <div class="step-indicator">
+          <span class="step-pill active">1</span>
+          <span class="step-pill">2</span>
+          <span class="step-pill">3</span>
+          <span class="step-pill">4</span>
+          <span class="step-pill">5</span>
+          <span class="step-pill">6</span>
+        </div>
       </header>
 
-      <main>
-        <section class="hero">
-          <div class="hero-copy">
-            <p class="eyebrow">Age-aware support communities</p>
-            <h1>Welcome to NextPath</h1>
-            <h2>What are you looking for?</h2>
+      <main class="onboarding-app">
+        <section class="screen active" data-step="1">
+          <div class="intro-copy">
+            <p class="eyebrow">You are not alone</p>
+            <h1 class="bubble">Welcome to NextPath</h1>
             <p class="subtext">
-              Find people who understand what you're going through. NextPath matches
-              you with supportive age-based communities, local resources, and global
-              conversations designed around your situation.
+              We help you find a supportive community based on your age, your
+              situation, and the kind of guidance you need.
             </p>
 
             <div class="cta-row">
-              <a class="primary" href="#journey">Start your path</a>
-              <a class="secondary" href="#community">See communities</a>
-            </div>
-
-            <div class="mini-stats">
-              <div>
-                <strong>Age-based</strong>
-                <span>Matching</span>
-              </div>
-              <div>
-                <strong>Local + global</strong>
-                <span>Community options</span>
-              </div>
-              <div>
-                <strong>Avatar-first</strong>
-                <span>Safe identity</span>
-              </div>
+              <button class="primary-btn next-btn">Get started</button>
             </div>
           </div>
 
-          <aside class="age-card" aria-labelledby="age-heading">
-            <div class="card-header">
-              <span class="dot active"></span>
-              <span id="age-heading">How old are you?</span>
+          <div class="info-panel">
+            <div class="mini-card">
+              <span class="mini-label">Age-based matching</span>
+              <strong>Teen / young adult / adult</strong>
             </div>
+            <div class="mini-card">
+              <span class="mini-label">Community types</span>
+              <strong>Global + local</strong>
+            </div>
+            <div class="mini-card">
+              <span class="mini-label">Support</span>
+              <strong>Groups, DMs, and resources</strong>
+            </div>
+          </div>
+        </section>
 
-            <div class="age-value" id="ageValue">15</div>
+        <section class="screen" data-step="2">
+          <div class="card-header">
+            <span class="eyebrow small">Step 1</span>
+            <h2 class="bubble">How old are you?</h2>
+          </div>
+
+          <div class="age-box">
+            <div class="age-readout">
+              <span id="ageValue">15</span>
+            </div>
             <input id="ageRange" type="range" min="7" max="100" value="15" />
-
-            <div class="age-note" id="ageNote">You will be placed within ages 13-18</div>
-
-            <div class="community-tag" id="ageGroup">Teen support circle</div>
-          </aside>
-        </section>
-
-        <section class="section" id="journey">
-          <div class="section-head">
-            <span class="section-kicker">Main goal</span>
-            <h3>What are you going through?</h3>
+            <div id="ageNote" class="age-note">You will be placed within ages 13-18</div>
+            <div id="ageTag" class="age-tag">Teen support circle</div>
           </div>
 
-          <div class="goal-panel">
-            <p>
-              We help you find a community where you can feel supported, ask for
-              advice, and connect with others who are walking a similar path.
-            </p>
-
-            <div class="chip-wrap" aria-label="Experience categories">
-              <button class="chip active">Loss &amp; Grief</button>
-              <button class="chip">Home &amp; Family</button>
-              <button class="chip">Money &amp; Work</button>
-              <button class="chip">School</button>
-              <button class="chip">Mental Wellbeing</button>
-              <button class="chip">Physical Health</button>
-              <button class="chip">Relationships</button>
-              <button class="chip">Moving &amp; Change</button>
-              <button class="chip">Finding Community</button>
-              <button class="chip">Personal Growth</button>
-              <button class="chip">Something Else</button>
-            </div>
-          </div>
-
-          <div class="local-toggle">
-            <span>Would you like to join your local group?</span>
-            <div class="toggle-row">
-              <button class="toggle-btn active">Yes</button>
-              <button class="toggle-btn">No</button>
-            </div>
+          <div class="nav-row">
+            <button class="ghost-btn prev-btn">Back</button>
+            <button class="primary-btn next-btn">Next</button>
           </div>
         </section>
 
-        <section class="section split-layout" id="community">
-          <div class="profile-panel">
-            <div class="panel-title-row">
-              <span class="section-kicker">Profile / Avatar</span>
-              <span class="status-badge">Verified</span>
-            </div>
+        <section class="screen" data-step="3">
+          <div class="card-header">
+            <span class="eyebrow small">Step 2</span>
+            <h2 class="bubble">What are you mainly looking for?</h2>
+          </div>
 
-            <div class="profile-card">
-              <div class="profile-top">
+          <div class="choice-grid">
+            <button class="choice-card active">A community</button>
+            <button class="choice-card">Support programs</button>
+            <button class="choice-card">A job</button>
+            <button class="choice-card">Resources</button>
+            <button class="choice-card">Guidance</button>
+            <button class="choice-card">Something else</button>
+          </div>
+
+          <div class="nav-row">
+            <button class="ghost-btn prev-btn">Back</button>
+            <button class="primary-btn next-btn">Next</button>
+          </div>
+        </section>
+
+        <section class="screen" data-step="4">
+          <div class="card-header">
+            <span class="eyebrow small">Step 3</span>
+            <h2 class="bubble">What are you going through?</h2>
+          </div>
+
+          <div class="choice-grid category-grid">
+            <button class="choice-card active">Loss &amp; Grief</button>
+            <button class="choice-card">Home &amp; Family</button>
+            <button class="choice-card">Money &amp; Work</button>
+            <button class="choice-card">School</button>
+            <button class="choice-card">Mental Wellbeing</button>
+            <button class="choice-card">Physical Health</button>
+            <button class="choice-card">Relationships</button>
+            <button class="choice-card">Moving &amp; Change</button>
+            <button class="choice-card">Finding Community</button>
+            <button class="choice-card">Personal Growth</button>
+            <button class="choice-card">Something else</button>
+          </div>
+
+          <div class="nav-row">
+            <button class="ghost-btn prev-btn">Back</button>
+            <button class="primary-btn next-btn">Next</button>
+          </div>
+        </section>
+
+        <section class="screen" data-step="5">
+          <div class="card-header">
+            <span class="eyebrow small">Step 4</span>
+            <h2 class="bubble">Build your profile</h2>
+          </div>
+
+          <div class="profile-layout">
+            <div class="profile-side">
+              <div class="avatar-wrap">
                 <div class="avatar-circle">A</div>
-                <div>
-                  <h4>Amara</h4>
-                  <p>17 · School: NCHS</p>
-                </div>
               </div>
+              <label class="field-label">First name</label>
+              <input type="text" value="Amara" class="text-field" />
+              <label class="field-label">School / College</label>
+              <input type="text" value="NCHS" class="text-field" />
+            </div>
 
-              <div class="bio-box">
-                <p>
-                  Interested in mental wellbeing, art, music, and building a more
-                  supportive circle.
-                </p>
-              </div>
-
+            <div class="profile-side details">
+              <label class="field-label">Interests</label>
               <div class="interest-tags">
                 <span>Music</span>
                 <span>Art</span>
@@ -139,100 +149,47 @@
                 <span>Friends</span>
               </div>
 
-              <div class="profile-actions">
-                <button>DM</button>
-                <button class="secondary-action">Add to Group</button>
-              </div>
+              <label class="field-label">Bio</label>
+              <textarea class="text-field area">Looking for peer support, encouragement, and a safe place to feel understood.</textarea>
 
-              <div class="photo-grid" aria-label="Profile photo placeholders">
-                <div class="photo-card">Photo 1</div>
-                <div class="photo-card">Photo 2</div>
-                <div class="photo-card">Photo 3</div>
+              <label class="field-label">Local or global?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active">Global + Local</button>
+                <button class="toggle-btn">Global only</button>
               </div>
             </div>
           </div>
 
-          <div class="community-panel">
-            <div class="panel-title-row">
-              <span class="section-kicker">Match</span>
-              <span class="status-badge alt">Support</span>
-            </div>
-
-            <div class="match-card">
-              <h4>Suggested community</h4>
-              <ul>
-                <li>Age-separated communities</li>
-                <li>Global support threads</li>
-                <li>Local community meetups</li>
-                <li>Advice, jobs, and resources</li>
-                <li>Private DMs and group chats</li>
-              </ul>
-            </div>
+          <div class="nav-row">
+            <button class="ghost-btn prev-btn">Back</button>
+            <button class="primary-btn next-btn">Next</button>
           </div>
         </section>
 
-        <section class="section">
-          <div class="section-head">
-            <span class="section-kicker">Global / Local navigation</span>
-            <h3>Choose your community path</h3>
+        <section class="screen" data-step="6">
+          <div class="card-header">
+            <span class="eyebrow small">Step 5</span>
+            <h2 class="bubble">Your community match</h2>
           </div>
 
-          <div class="community-grid" id="join">
-            <div class="community-card highlight">
-              <span class="tab-label">JOIN</span>
-              <h4>Join a community</h4>
-              <p>Connect with people who relate to your age and current situation.</p>
+          <div class="match-box">
+            <div class="match-header">
+              <div class="pill">Recommended</div>
+              <div class="status-dot"></div>
             </div>
-            <div class="community-card" id="global">
-              <span class="tab-label">GLOBAL</span>
-              <h4>Browse global groups</h4>
-              <p>Meet peers across regions and share encouragement at scale.</p>
-            </div>
-            <div class="community-card" id="local">
-              <span class="tab-label">LOCAL</span>
-              <h4>Explore local support</h4>
-              <p>Find nearby groups, opportunities, and people in your area.</p>
-            </div>
-          </div>
-        </section>
 
-        <section class="section">
-          <div class="section-head">
-            <span class="section-kicker">App flow</span>
-            <h3>How the experience works</h3>
+            <h3>Teen Support Circle</h3>
+            <ul>
+              <li>Age-separated community</li>
+              <li>Supportive group chats</li>
+              <li>Local meetups and resources</li>
+              <li>Private DMs to connect</li>
+            </ul>
           </div>
 
-          <div class="steps-grid">
-            <div class="step-card">
-              <span class="step-number">1</span>
-              <h4>Basic info</h4>
-              <p>Name, age, and initial setup determine community placement.</p>
-            </div>
-            <div class="step-card">
-              <span class="step-number">2</span>
-              <h4>What you're looking for</h4>
-              <p>Choose from support needs such as school, grief, health, or growth.</p>
-            </div>
-            <div class="step-card">
-              <span class="step-number">3</span>
-              <h4>School &amp; interests</h4>
-              <p>Optional context like school, hobbies, or personal interests.</p>
-            </div>
-            <div class="step-card">
-              <span class="step-number">4</span>
-              <h4>Verify identity</h4>
-              <p>Phone verification helps keep communities safe and trusted.</p>
-            </div>
-            <div class="step-card">
-              <span class="step-number">5</span>
-              <h4>Build profile</h4>
-              <p>Avatar, bio, school initials, photos, and interests create the profile.</p>
-            </div>
-            <div class="step-card">
-              <span class="step-number">6</span>
-              <h4>Find community</h4>
-              <p>Matching happens through age, life situation, interests, and location.</p>
-            </div>
+          <div class="nav-row end">
+            <button class="ghost-btn prev-btn">Back</button>
+            <button class="primary-btn">Join Now</button>
           </div>
         </section>
       </main>

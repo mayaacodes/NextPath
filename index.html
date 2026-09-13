@@ -165,32 +165,12 @@
               <label class="field-label">First name</label>
               <input type="text" placeholder="Type your name here" class="text-field" />
               <label class="field-label">School / College</label>
-              <select id="schoolSelect" class="text-field">
-                <option value="">Choose your school (optional)</option>
-                <optgroup label="Middle schools">
-                  <option>Lincoln Middle School</option>
-                  <option>Roosevelt Middle School</option>
-                  <option>Washington Middle School</option>
-                  <option>Jefferson Middle School</option>
-                  <option>Other middle school</option>
-                </optgroup>
-                <optgroup label="High schools">
-                  <option>Lincoln High School</option>
-                  <option>Roosevelt High School</option>
-                  <option>Washington High School</option>
-                  <option>Jefferson High School</option>
-                  <option>Other high school</option>
-                </optgroup>
-                <optgroup label="Colleges and universities">
-                  <option>Community college</option>
-                  <option>State university</option>
-                  <option>Technical college</option>
-                  <option>Four-year university</option>
-                  <option>Other college or university</option>
-                </optgroup>
-                <option value="not-in-school">I do not go to school</option>
-                <option value="other">Other school</option>
-              </select>
+              <div class="school-search">
+                <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
+                <div id="schoolSuggestions" class="school-suggestions" role="listbox"></div>
+              </div>
+              <div id="schoolAbbreviation" class="school-abbreviation">Your school initials will appear here</div>
+              <button id="noSchoolButton" type="button" class="small-link">I do not go to school</button>
               <input id="otherSchool" type="text" class="text-field hidden-field" placeholder="Type your school name here" aria-label="Type your school name" />
             </div>
 

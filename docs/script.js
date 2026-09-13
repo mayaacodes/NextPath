@@ -218,17 +218,64 @@ if (avatarUpload) {
   });
 }
 
-const schoolSelect = document.getElementById('schoolSelect');
+const schoolSearch = document.getElementById('schoolSearch');
+const schoolSuggestions = document.getElementById('schoolSuggestions');
+const schoolAbbreviation = document.getElementById('schoolAbbreviation');
+const noSchoolButton = document.getElementById('noSchoolButton');
 const otherSchool = document.getElementById('otherSchool');
-if (schoolSelect && otherSchool) {
-  schoolSelect.addEventListener('change', () => {
-    const showOther = schoolSelect.value === 'other'
-      || schoolSelect.value === 'Other middle school'
-      || schoolSelect.value === 'Other high school'
-      || schoolSelect.value === 'Other college or university';
-    otherSchool.classList.toggle('hidden-field', !showOther);
-    otherSchool.required = showOther;
-    if (!showOther) otherSchool.value = '';
+const schoolDirectory = [
+  'South County High School', 'South County Middle School', 'Lincoln High School',
+  'Lincoln Middle School', 'Roosevelt High School', 'Roosevelt Middle School',
+  'Washington High School', 'Washington Middle School', 'Jefferson High School',
+  'Jefferson Middle School', 'Alexandria City High School', 'Boston Latin School',
+  'Brooklyn Technical High School', 'Thomas Jefferson High School for Science and Technology',
+  'University of Virginia', 'Virginia Tech', 'Howard University', 'Stanford University',
+  'Harvard University', 'Community College', 'State University', 'Technical College'
+];
+
+function getSchoolInitials(name) {
+  const words = name.replace(/[^a-zA-Z0-9 ]/g, '').trim().split(/\s+/);
+  const meaningful = words.filter((word) => !['the', 'of', 'and', 'for', 'at'].includes(word.toLowerCase()));
+  return meaningful.map((word) => word[0]).join('').toUpperCase().slice(0, 4);
+}
+
+function chooseSchool(name) {
+  schoolSearch.value = name;
+  schoolAbbreviation.textContent = `Profile initials: ${getSchoolInitials(name)}`;
+  schoolSuggestions.innerHTML = '';
+  schoolSuggestions.classList.remove('visible');
+  otherSchool.classList.add('hidden-field');
+  otherSchool.required = false;
+}
+
+if (schoolSearch && schoolSuggestions && schoolAbbreviation && otherSchool) {
+  schoolSearch.addEventListener('input', () => {
+    const query = schoolSearch.value.trim().toLowerCase();
+    schoolAbbreviation.textContent = query
+      ? `Profile initials: ${getSchoolInitials(schoolSearch.value)}`
+      : 'Your school initials will appear here';
+    if (query.length < 2) {
+      schoolSuggestions.innerHTML = '';
+      schoolSuggestions.classList.remove('visible');
+      return;
+    }
+    const matches = schoolDirectory.filter((school) => school.toLowerCase().includes(query)).slice(0, 8);
+    schoolSuggestions.innerHTML = matches.map((school) => `<button type="button" class="school-suggestion">${school}<small>${getSchoolInitials(school)}</small></button>`).join('');
+    schoolSuggestions.classList.toggle('visible', matches.length > 0);
+    schoolSuggestions.querySelectorAll('.school-suggestion').forEach((button) => {
+      button.addEventListener('click', () => chooseSchool(button.textContent.replace(button.querySelector('small').textContent, '').trim()));
+    });
+  });
+}
+
+if (noSchoolButton && otherSchool) {
+  noSchoolButton.addEventListener('click', () => {
+    schoolSearch.value = 'Not in school';
+    schoolAbbreviation.textContent = 'School initials hidden';
+    schoolSuggestions.innerHTML = '';
+    schoolSuggestions.classList.remove('visible');
+    otherSchool.classList.add('hidden-field');
+    otherSchool.required = false;
   });
 }
 

@@ -413,6 +413,68 @@ input[type="range"] {
   display: none;
 }
 
+.school-search {
+  position: relative;
+}
+
+.school-suggestions {
+  position: absolute;
+  z-index: 4;
+  display: none;
+  width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: 0 14px 30px rgba(23, 59, 87, 0.14);
+}
+
+.school-suggestions.visible {
+  display: block;
+}
+
+.school-suggestion {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--navy-900);
+  text-align: left;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.school-suggestion:hover {
+  background: rgba(184,232,255,0.35);
+}
+
+.school-suggestion small {
+  color: var(--sky-900);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.school-abbreviation {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.small-link {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sky-900);
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .field-label {
   display: block;
   margin: 14px 0 8px;

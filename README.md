@@ -1,6 +1,6 @@
 # NextPath Website
 
-This repository contains a small C++ project structure for the NextPath website.
+This repository contains a small C++ project structure for the [NextPath website](https://nextpath.example.com).
 
 ## Layout
 

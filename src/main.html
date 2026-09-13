@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextPath Main Entry Point</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .flow {
+            background-color: #f0f8ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NextPath Main Entry Point (main.cpp)</h1>
+        
+        <div class="flow">
+            <h2>Execution Flow</h2>
+            
+            <div class="step">
+                <span class="step-number">Step 1:</span> Include the App header file
+                <p style="margin: 5px 0; font-family: monospace; color: #666;">#include "nextpath/App.hpp"</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">Step 2:</span> Main function entry point
+                <p style="margin: 5px 0; font-family: monospace; color: #666;">int main()</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">Step 3:</span> Create an instance of the NextPath App
+                <p style="margin: 5px 0; font-family: monospace; color: #666;">nextpath::App app;</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">Step 4:</span> Run the application
+                <p style="margin: 5px 0; font-family: monospace; color: #666;">app.run();</p>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">Step 5:</span> Return success status
+                <p style="margin: 5px 0; font-family: monospace; color: #666;">return 0;</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 10px; background-color: #e8f5e9; border-radius: 4px;">
+            <strong>Summary:</strong> This is the main entry point for the NextPath application. It initializes an App object and calls its run() method to start the application.
+        </div>
+    </div>
+</body>
+</html>

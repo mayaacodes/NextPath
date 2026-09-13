@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextPath App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .route {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+        .method {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .path {
+            color: #28a745;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NextPath Website App</h1>
+        <p>NextPath website app is ready.</p>
+        <p>Static assets live in web/public and web/assets.</p>
+        <p>Use this as a base for routes, handlers, and future HTTP integration.</p>
+        
+        <h2>Available Routes</h2>
+        <div class="route">
+            <span class="method">GET</span>
+            <span class="path">/</span>
+            <span>Home page</span>
+        </div>
+        <div class="route">
+            <span class="method">GET</span>
+            <span class="path">/about</span>
+            <span>About page</span>
+        </div>
+        <div class="route">
+            <span class="method">GET</span>
+            <span class="path">/contact</span>
+            <span>Contact page</span>
+        </div>
+    </div>
+</body>
+</html>

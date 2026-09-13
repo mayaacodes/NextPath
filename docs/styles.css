@@ -345,6 +345,72 @@ input[type="range"] {
   font-size: 2.2rem;
   font-weight: 900;
   box-shadow: 0 18px 24px rgba(87,184,241,0.2);
+  background-size: cover;
+  background-position: center;
+}
+
+.avatar-circle.pink {
+  background: linear-gradient(135deg, #ffb8d2, #e66b9a);
+}
+
+.avatar-circle.purple {
+  background: linear-gradient(135deg, #d0b8ff, #8762d6);
+}
+
+.avatar-circle.green {
+  background: linear-gradient(135deg, #a9e8c4, #45ae75);
+}
+
+.avatar-circle.gold {
+  background: linear-gradient(135deg, #ffe4a1, #e1a62a);
+}
+
+.avatar-circle.has-image {
+  background-color: var(--sky-300);
+  background-repeat: no-repeat;
+}
+
+.avatar-colors {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 14px;
+}
+
+.avatar-color {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-300), var(--sky-500));
+  cursor: pointer;
+}
+
+.avatar-color.pink { background: linear-gradient(135deg, #ffb8d2, #e66b9a); }
+.avatar-color.purple { background: linear-gradient(135deg, #d0b8ff, #8762d6); }
+.avatar-color.green { background: linear-gradient(135deg, #a9e8c4, #45ae75); }
+.avatar-color.gold { background: linear-gradient(135deg, #ffe4a1, #e1a62a); }
+.avatar-color.active { border-color: var(--navy-900); }
+
+.upload-btn {
+  display: inline-flex;
+  width: fit-content;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--sky-900);
+  background: rgba(255,255,255,0.78);
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.upload-btn input {
+  display: none;
+}
+
+.hidden-field {
+  display: none;
 }
 
 .field-label {

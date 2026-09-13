@@ -196,6 +196,42 @@ document.querySelectorAll('.toggle-btn').forEach((button) => {
   });
 });
 
+document.querySelectorAll('.avatar-color').forEach((button) => {
+  button.addEventListener('click', () => {
+    const avatar = button.closest('.profile-side').querySelector('.avatar-circle');
+    button.parentElement.querySelectorAll('.avatar-color').forEach((item) => item.classList.remove('active'));
+    button.classList.add('active');
+    avatar.className = `avatar-circle ${button.dataset.color}`;
+    avatar.textContent = 'A';
+  });
+});
+
+const avatarUpload = document.getElementById('avatarUpload');
+if (avatarUpload) {
+  avatarUpload.addEventListener('change', () => {
+    const file = avatarUpload.files[0];
+    if (!file) return;
+    const avatar = avatarUpload.closest('.profile-side').querySelector('.avatar-circle');
+    avatar.style.backgroundImage = `url("${URL.createObjectURL(file)}")`;
+    avatar.classList.add('has-image');
+    avatar.textContent = '';
+  });
+}
+
+const schoolSelect = document.getElementById('schoolSelect');
+const otherSchool = document.getElementById('otherSchool');
+if (schoolSelect && otherSchool) {
+  schoolSelect.addEventListener('change', () => {
+    const showOther = schoolSelect.value === 'other'
+      || schoolSelect.value === 'Other middle school'
+      || schoolSelect.value === 'Other high school'
+      || schoolSelect.value === 'Other college or university';
+    otherSchool.classList.toggle('hidden-field', !showOther);
+    otherSchool.required = showOther;
+    if (!showOther) otherSchool.value = '';
+  });
+}
+
 prevButtons.forEach((button) => button.addEventListener('click', () => showStep(currentStep - 1)));
 
 nextButtons.forEach((button) => {

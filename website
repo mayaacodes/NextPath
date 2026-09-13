@@ -1,0 +1,10 @@
+my-cpp-website/
+├── src/
+│   └── main.cpp
+├── public/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── CMakeLists.txt
+├── .gitignore
+└── README.md

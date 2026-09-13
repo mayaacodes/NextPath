@@ -1,7 +1,25 @@
 my-cpp-website/
 ├── src/
+#include <iostream>
+#include <string>
+#include "httplib.h"
+
+int main() {
+    httplib::Server server;
+
+    // Serve the website files from the public folder
+    server.set_mount_point("/", "./public");
+
+    std::cout << "Website running at http://localhost:8080\n";
+
+    server.listen("0.0.0.0", 8080);
+
+    return 0;
+}
 │   └── main.cpp
 ├── public/
+├── include/
+│   └── httplib.h
 │   ├── index.html
 │   ├── style.css
 │   └── script.js

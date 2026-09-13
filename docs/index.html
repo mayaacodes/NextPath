@@ -162,6 +162,14 @@
                 Upload your own picture
                 <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
               </label>
+              <div id="avatarCropControls" class="avatar-crop-controls hidden-field">
+                <label class="crop-label" for="avatarZoom">Zoom</label>
+                <input id="avatarZoom" type="range" min="100" max="220" value="125" />
+                <label class="crop-label" for="avatarX">Left / right</label>
+                <input id="avatarX" type="range" min="0" max="100" value="50" />
+                <label class="crop-label" for="avatarY">Up / down</label>
+                <input id="avatarY" type="range" min="0" max="100" value="50" />
+              </div>
               <label class="field-label">First name</label>
               <input type="text" placeholder="Type your name here" class="text-field" />
               <label class="field-label">School / College</label>

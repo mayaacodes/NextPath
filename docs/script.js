@@ -207,16 +207,33 @@ document.querySelectorAll('.avatar-color').forEach((button) => {
 });
 
 const avatarUpload = document.getElementById('avatarUpload');
+const avatarCropControls = document.getElementById('avatarCropControls');
+const avatarZoom = document.getElementById('avatarZoom');
+const avatarX = document.getElementById('avatarX');
+const avatarY = document.getElementById('avatarY');
+const avatarPreview = avatarUpload ? avatarUpload.closest('.profile-side').querySelector('.avatar-circle') : null;
+
+function updateAvatarCrop() {
+  if (!avatarPreview || !avatarZoom || !avatarX || !avatarY) return;
+  avatarPreview.style.backgroundSize = `${avatarZoom.value}%`;
+  avatarPreview.style.backgroundPosition = `${avatarX.value}% ${avatarY.value}%`;
+}
+
 if (avatarUpload) {
   avatarUpload.addEventListener('change', () => {
     const file = avatarUpload.files[0];
     if (!file) return;
-    const avatar = avatarUpload.closest('.profile-side').querySelector('.avatar-circle');
-    avatar.style.backgroundImage = `url("${URL.createObjectURL(file)}")`;
-    avatar.classList.add('has-image');
-    avatar.textContent = '';
+    avatarPreview.style.backgroundImage = `url("${URL.createObjectURL(file)}")`;
+    avatarPreview.classList.add('has-image');
+    avatarPreview.textContent = '';
+    avatarCropControls.classList.remove('hidden-field');
+    updateAvatarCrop();
   });
 }
+
+[avatarZoom, avatarX, avatarY].forEach((control) => {
+  if (control) control.addEventListener('input', updateAvatarCrop);
+});
 
 const schoolSearch = document.getElementById('schoolSearch');
 const schoolSuggestions = document.getElementById('schoolSuggestions');

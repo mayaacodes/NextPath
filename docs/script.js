@@ -624,13 +624,15 @@ function syncProfileInputs(account) {
     }
   }
 
-  selectedGoal = account.goal || selectedGoal;
+  selectedGoal = pathwayMap[account.goal] ? account.goal : 'A community';
   setChoiceState(screens[2].querySelector('.choice-grid'), selectedGoal);
   renderCategoryScreen(selectedGoal);
-  selectedCategory = account.category || selectedCategory;
+  const availableCategories = pathwayMap[selectedGoal]?.categories || [];
+  selectedCategory = availableCategories.includes(account.category) ? account.category : (availableCategories[0] || selectedCategory);
   setChoiceState(screens[3].querySelector('.choice-grid'), selectedCategory);
   renderSubcategoryScreen(selectedCategory);
-  selectedSubcategory = account.subcategory || '';
+  const availableSubcategories = subcategoryMap[selectedCategory] || [];
+  selectedSubcategory = availableSubcategories.includes(account.subcategory) ? account.subcategory : '';
   if (selectedSubcategory) {
     setChoiceState(screens[4].querySelector('.choice-grid'), selectedSubcategory);
   }
@@ -1121,9 +1123,14 @@ if (saveSettingsButton) {
     account.age = Number(settingsAge?.value || account.age || ageRange?.value || 15);
     account.firstName = settingsName.value.trim();
     account.email = normalizeEmail(settingsEmail.value);
-    account.goal = settingsGoal?.value.trim() || account.goal || selectedGoal;
-    account.category = settingsCategory?.value.trim() || account.category || selectedCategory;
-    account.subcategory = settingsSubcategory?.value.trim() || '';
+    const requestedGoal = settingsGoal?.value.trim() || account.goal || selectedGoal;
+    account.goal = pathwayMap[requestedGoal] ? requestedGoal : 'A community';
+    const categoryOptions = pathwayMap[account.goal]?.categories || [];
+    const requestedCategory = settingsCategory?.value.trim() || account.category || selectedCategory;
+    account.category = categoryOptions.includes(requestedCategory) ? requestedCategory : (categoryOptions[0] || 'Loss & Grief');
+    const requestedSubcategory = settingsSubcategory?.value.trim() || account.subcategory || '';
+    const subcategoryOptions = subcategoryMap[account.category] || [];
+    account.subcategory = subcategoryOptions.includes(requestedSubcategory) ? requestedSubcategory : '';
     account.school = settingsSchool.value.trim() || 'Not shared yet';
     account.locationMode = settingsLocation.value.trim() || account.locationMode;
     account.interests = parseInterestInput(settingsInterests?.value) || account.interests;

@@ -90,6 +90,12 @@ button {
   align-items: center;
 }
 
+.topbar-side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .nav-link {
   color: #000000 !important;
   text-decoration: none;
@@ -117,6 +123,66 @@ button {
   gap: 8px;
 }
 
+.account-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.86);
+  color: var(--navy-900);
+}
+
+.account-chip-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+
+.account-chip-copy strong {
+  font-size: 0.92rem;
+}
+
+.account-chip-copy span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.account-chip-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-300), var(--sky-500));
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 10px 18px rgba(87,184,241,0.2);
+}
+
+.account-chip-avatar.pink { background: linear-gradient(135deg, #ffb8d2, #e66b9a); }
+.account-chip-avatar.purple { background: linear-gradient(135deg, #d0b8ff, #8762d6); }
+.account-chip-avatar.green { background: linear-gradient(135deg, #a9e8c4, #45ae75); }
+.account-chip-avatar.gold { background: linear-gradient(135deg, #ffe4a1, #e1a62a); }
+.account-chip-avatar.has-image { background-repeat: no-repeat; }
+
+.account-settings-btn,
+.account-save-btn {
+  min-height: 44px;
+}
+
 .step-pill {
   width: 30px;
   height: 30px;
@@ -141,12 +207,30 @@ button {
   min-height: 620px;
 }
 
+.app-notice {
+  margin: 14px 6px 0;
+  padding: 12px 16px;
+  border: 1px solid rgba(44,142,217,0.2);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.78);
+  color: var(--sky-900);
+  font-weight: 700;
+}
+
 .page-content {
   display: none;
 }
 
 .page-content.active {
   display: block;
+}
+
+.page-card {
+  background: rgba(255,255,255,0.62);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 34px 30px 26px;
+  box-shadow: 0 18px 34px var(--shadow);
 }
 
 .screen {
@@ -172,6 +256,10 @@ button {
 
 .about-content {
   max-width: 700px;
+}
+
+.about-panel {
+  grid-template-columns: 1fr 1fr;
 }
 
 .email-link {
@@ -306,6 +394,19 @@ h3 {
 .mini-card strong {
   font-size: 1.04rem;
   line-height: 1.4;
+}
+
+.info-copy {
+  margin: 0;
+  color: #4a5f7f;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.section-title {
+  margin: 0 0 1em;
+  color: #1a3a5c;
+  font-size: 1.1rem;
 }
 
 .age-box {
@@ -739,6 +840,20 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.field-help,
+.small-subtext,
+.owner-note,
+.placeholder-note,
+.match-meta {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.field-help {
+  margin: 8px 0 0;
+}
+
 .text-field {
   width: 100%;
   min-height: 48px;
@@ -752,6 +867,95 @@ input[type="range"] {
 .text-field.area {
   min-height: 120px;
   resize: vertical;
+}
+
+.empty-state {
+  margin-top: 20px;
+  padding: 20px 22px;
+  border: 1px dashed rgba(44,142,217,0.3);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.72);
+}
+
+.people-grid,
+.account-page-grid,
+.post-list {
+  display: grid;
+  gap: 16px;
+}
+
+.people-grid,
+.account-page-grid {
+  margin-top: 20px;
+}
+
+.account-page-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.people-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.people-card,
+.post-card {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.78);
+}
+
+.people-card-header,
+.post-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.people-card h3,
+.post-card h3 {
+  font-size: 1.08rem;
+}
+
+.post-card textarea {
+  margin-top: 10px;
+}
+
+.post-card .primary-btn {
+  margin-top: 14px;
+}
+
+.post-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(87,184,241,0.12);
+  color: var(--sky-900);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.placeholder-note {
+  margin: 18px 4px 0;
+}
+
+.contact-panel {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.contact-intro {
+  margin: 0 0 20px;
+  color: #4a5f7f;
+  font-size: 1.2rem;
+}
+
+.contact-link {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1.3rem;
 }
 
 .interest-tags {
@@ -874,7 +1078,13 @@ input[type="range"] {
   .choice-grid,
   .info-panel,
   .profile-layout,
-  .action-grid {
+  .action-grid,
+  .people-grid,
+  .account-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-panel {
     grid-template-columns: 1fr;
   }
 
@@ -900,6 +1110,13 @@ input[type="range"] {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .topbar-side,
+  .account-summary {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .nav-menu {

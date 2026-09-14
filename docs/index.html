@@ -14,24 +14,40 @@
           <div class="brand-mark">N</div>
           <span class="brand-name">NextPath</span>
         </div>
-        
+
         <nav class="nav-menu">
           <a href="#" class="nav-link active" data-page="home">Home</a>
           <a href="#" class="nav-link" data-page="about">About Us</a>
           <a href="#" class="nav-link" data-page="resources">Resources</a>
           <a href="#" class="nav-link" data-page="contact">Contact</a>
+          <a href="#" class="nav-link hidden-field" data-page="people" data-auth-only="true">People</a>
         </nav>
-        
-        <div class="step-indicator">
-          <span class="step-pill active">1</span>
-          <span class="step-pill">2</span>
-          <span class="step-pill">3</span>
-          <span class="step-pill">4</span>
-          <span class="step-pill">5</span>
-          <span class="step-pill">6</span>
-          <span class="step-pill">7</span>
+
+        <div class="topbar-side">
+          <div id="accountSummary" class="account-summary hidden-field" aria-live="polite">
+            <button id="accountSummaryButton" class="account-chip" type="button">
+              <div id="accountSummaryAvatar" class="account-chip-avatar">A</div>
+              <div class="account-chip-copy">
+                <strong id="accountSummaryName">Your account</strong>
+                <span id="accountSummaryMeta">Create an account to see it here.</span>
+              </div>
+            </button>
+            <button id="accountSettingsButton" class="ghost-btn account-settings-btn" type="button">My settings</button>
+          </div>
+
+          <div class="step-indicator">
+            <span class="step-pill active">1</span>
+            <span class="step-pill">2</span>
+            <span class="step-pill">3</span>
+            <span class="step-pill">4</span>
+            <span class="step-pill">5</span>
+            <span class="step-pill">6</span>
+            <span class="step-pill">7</span>
+          </div>
         </div>
       </header>
+
+      <p id="appNotice" class="app-notice hidden-field" role="status" aria-live="polite"></p>
 
       <main class="onboarding-app">
         <!-- Home Page (Main Onboarding) -->
@@ -163,7 +179,7 @@
                     <button id="cropAvatarBtn" class="crop-btn" aria-label="Crop avatar" title="Crop your avatar">✂️</button>
                   </div>
                 </div>
-                
+
                 <label class="field-label">Choose an avatar color</label>
                 <div class="avatar-colors" aria-label="Choose an avatar color">
                   <button type="button" class="avatar-color active" data-color="blue" aria-label="Blue"></button>
@@ -176,9 +192,12 @@
                   Upload your own picture
                   <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
                 </label>
-                
-                <label class="field-label">First name</label>
-                <input type="text" placeholder="Type your name here" class="text-field" />
+
+                <label class="field-label" for="firstName">First name</label>
+                <input id="firstName" type="text" placeholder="Type your name here" class="text-field" required />
+                <label class="field-label" for="emailAddress">Email</label>
+                <input id="emailAddress" type="email" placeholder="Type your email here" class="text-field" aria-describedby="emailHelp" required />
+                <p id="emailHelp" class="field-help">For emails and updates.</p>
                 <label class="field-label">School / College</label>
                 <div class="school-search">
                   <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
@@ -209,8 +228,8 @@
                   <span>Creative projects</span>
                 </div>
 
-                <label class="field-label">Bio</label>
-                <textarea class="text-field area">Looking for peer support, encouragement, and a safe place to feel understood.</textarea>
+                <label class="field-label" for="profileBio">Bio</label>
+                <textarea id="profileBio" class="text-field area">Looking for peer support, encouragement, and a safe place to feel understood.</textarea>
 
                 <label class="field-label">Local or global?</label>
                 <div class="toggle-row">
@@ -252,7 +271,7 @@
 
             <div class="nav-row end">
               <button class="ghost-btn prev-btn">Back</button>
-              <button class="primary-btn">Join Now</button>
+              <button id="joinNowButton" class="primary-btn" type="button">Join Now</button>
             </div>
           </section>
         </div>
@@ -263,31 +282,31 @@
             <div class="card-header">
               <h1 class="bubble">About NextPath</h1>
             </div>
-            
+
             <div class="info-panel about-panel">
               <div class="mini-card">
-                <p style="font-size: 1rem; line-height: 1.6; color: #4a5f7f; margin: 0;">
+                <p class="info-copy">
                   NextPath is designed for people rebuilding their lives after a major disruption—especially young adults facing barriers such as homelessness, financial hardship, interrupted education, unemployment, or limited access to opportunity. Rather than labeling people by what happened to them, NextPath focuses on where they are now and where they want to go.
                 </p>
               </div>
 
               <div class="mini-card">
-                <h3 style="font-size: 1.1em; color: #1a3a5c; margin: 0 0 1em 0;">How We Help</h3>
-                <p style="font-size: 1rem; line-height: 1.6; color: #4a5f7f; margin: 0;">
+                <h3 class="section-title">How We Help</h3>
+                <p class="info-copy">
                   We connect you with supportive communities, local resources, and mentorship opportunities to help you chart your own path forward.
                 </p>
               </div>
 
               <div class="mini-card">
-                <h3 style="font-size: 1.1em; color: #1a3a5c; margin: 0 0 1em 0;">Get in Touch</h3>
-                <p style="font-size: 1rem; line-height: 1.6; color: #4a5f7f; margin: 0;">
+                <h3 class="section-title">Get in Touch</h3>
+                <p class="info-copy">
                   Have questions or want to learn more? Reach out to us at <a href="mailto:nextpathproject@gmail.com" class="email-link">nextpathproject@gmail.com</a>
                 </p>
               </div>
 
               <div class="mini-card">
-                <h3 style="font-size: 1.1em; color: #1a3a5c; margin: 0 0 1em 0;">Featured Stories</h3>
-                <p style="font-size: 1rem; line-height: 1.6; color: #4a5f7f; margin: 0;">
+                <h3 class="section-title">Featured Stories</h3>
+                <p class="info-copy">
                   Coming soon! Share inspiring stories from our community members.
                 </p>
               </div>
@@ -312,15 +331,86 @@
           </div>
         </div>
 
+        <!-- People Page -->
+        <div id="people-page" class="page-content">
+          <div class="page-card">
+            <div class="card-header">
+              <span class="eyebrow small">People</span>
+              <h1 class="bubble">People who get it</h1>
+              <p id="peopleContext" class="subtext">Create your account to unlock personalized people and community matching.</p>
+            </div>
+
+            <div id="peopleEmptyState" class="empty-state">
+              <h3>No live people here yet</h3>
+              <p>
+                NextPath is still growing. This tab is already filtered by your onboarding problem and shared interests,
+                and it will populate with people and communities as they join.
+              </p>
+            </div>
+
+            <div id="peopleMatches" class="people-grid"></div>
+            <p id="peoplePlaceholderNote" class="placeholder-note hidden-field">Placeholder matches are shown while live members are still joining.</p>
+
+            <div class="nav-row">
+              <button class="ghost-btn back-to-home-btn">Back to Home</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Page -->
+        <div id="account-page" class="page-content">
+          <div class="page-card">
+            <div class="card-header">
+              <span class="eyebrow small">Account</span>
+              <h1 class="bubble">Your account</h1>
+              <p id="accountContext" class="subtext">Finish onboarding to see your account controls, settings, and posts.</p>
+            </div>
+
+            <div class="account-page-grid">
+              <section class="profile-side">
+                <h3>Settings</h3>
+                <p id="settingsOwnerNote" class="owner-note">Only the account owner can use these settings.</p>
+
+                <label class="field-label" for="settingsName">First name</label>
+                <input id="settingsName" type="text" class="text-field" disabled />
+
+                <label class="field-label" for="settingsEmail">Email</label>
+                <input id="settingsEmail" type="email" class="text-field" disabled />
+
+                <label class="field-label" for="settingsProblem">Community focus</label>
+                <input id="settingsProblem" type="text" class="text-field" disabled />
+
+                <label class="field-label" for="settingsSchool">School / College</label>
+                <input id="settingsSchool" type="text" class="text-field" disabled />
+
+                <label class="field-label" for="settingsLocation">Local or global</label>
+                <input id="settingsLocation" type="text" class="text-field" disabled />
+
+                <button id="saveSettingsButton" class="primary-btn account-save-btn" type="button" disabled>Save settings</button>
+              </section>
+
+              <section class="profile-side">
+                <h3>Your posts</h3>
+                <p class="small-subtext">Only posts created by this account show edit controls.</p>
+                <div id="accountPosts" class="post-list"></div>
+              </section>
+            </div>
+
+            <div class="nav-row">
+              <button class="ghost-btn back-to-home-btn">Back to Home</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Contact Page -->
         <div id="contact-page" class="page-content">
           <div class="page-card">
             <div class="card-header">
               <h1 class="bubble">Contact</h1>
             </div>
-            <div style="text-align: center; padding: 40px 20px;">
-              <p style="font-size: 1.2rem; color: #4a5f7f; margin-bottom: 20px;">Get in touch with NextPath</p>
-              <a href="mailto:nextpathproject@gmail.com" class="email-link" style="font-size: 1.3rem; display: inline-block; padding: 12px 24px;">
+            <div class="contact-panel">
+              <p class="contact-intro">Get in touch with NextPath</p>
+              <a href="mailto:nextpathproject@gmail.com" class="email-link contact-link">
                 nextpathproject@gmail.com
               </a>
             </div>
@@ -339,26 +429,26 @@
           <h3>Crop Your Avatar</h3>
           <button id="closeCropper" class="close-btn" aria-label="Close cropper">×</button>
         </div>
-        
+
         <div class="cropper-content">
           <div class="crop-canvas-wrapper">
             <canvas id="cropCanvas"></canvas>
             <div class="crop-overlay"></div>
           </div>
-          
+
           <div class="crop-controls-section">
             <div class="control-group">
               <label class="crop-label" for="avatarZoom">Zoom</label>
               <input id="avatarZoom" type="range" min="50" max="300" value="100" step="5" />
               <span class="control-value" id="zoomValue">100%</span>
             </div>
-            
+
             <div class="control-group">
               <label class="crop-label" for="avatarX">Left / Right</label>
               <input id="avatarX" type="range" min="-100" max="100" value="0" step="5" />
               <span class="control-value" id="xValue">0%</span>
             </div>
-            
+
             <div class="control-group">
               <label class="crop-label" for="avatarY">Up / Down</label>
               <input id="avatarY" type="range" min="-100" max="100" value="0" step="5" />
@@ -366,33 +456,13 @@
             </div>
           </div>
         </div>
-        
+
         <div class="cropper-actions">
           <button id="cancelCrop" class="ghost-btn">Cancel</button>
           <button id="applyCrop" class="primary-btn">Apply Crop</button>
         </div>
       </div>
     </div>
-
-    <style>
-      .page-card {
-        background: rgba(255,255,255,0.62);
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        padding: 34px 30px 26px;
-        box-shadow: 0 18px 34px var(--shadow);
-      }
-
-      .about-panel {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      @media (max-width: 768px) {
-        .about-panel {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
 
     <script src="script.js"></script>
   </body>

@@ -210,8 +210,14 @@ function getSelectedAvatarColor() {
   return document.querySelector('.avatar-color.active')?.dataset.color || 'blue';
 }
 
+function sanitizeAvatarImageData(imageData) {
+  return /^data:image\/[a-zA-Z0-9.+-]+;base64,[a-z0-9+/=\s]+$/i.test(imageData || '')
+    ? imageData
+    : '';
+}
+
 function getAvatarImageData() {
-  return avatarPreview?.dataset.imageUrl || '';
+  return sanitizeAvatarImageData(avatarPreview?.dataset.imageUrl || '');
 }
 
 function getProblemLabel(account = appState.currentAccount) {
@@ -338,8 +344,9 @@ function syncAccountAvatar(account) {
   if (!accountSummaryAvatar) return;
 
   accountSummaryAvatar.className = `account-chip-avatar ${account.avatarColor || 'blue'}`;
-  if (account.avatarImageData) {
-    accountSummaryAvatar.style.backgroundImage = `url("${account.avatarImageData}")`;
+  const avatarImageData = sanitizeAvatarImageData(account.avatarImageData);
+  if (avatarImageData) {
+    accountSummaryAvatar.style.backgroundImage = `url("${avatarImageData}")`;
     accountSummaryAvatar.classList.add('has-image');
     accountSummaryAvatar.textContent = '';
   } else {
@@ -456,7 +463,7 @@ function getCommunityMatches(account) {
     .map((community) => {
       const sharedInterests = community.interests.filter((interest) => account.interests.includes(interest));
       const problemMatches = community.problems.includes(account.category) || community.problems.includes(account.subcategory);
-      if (!problemMatches || sharedInterests.length === 0) return null;
+      if (!problemMatches) return null;
 
       return {
         ...community,
@@ -481,7 +488,7 @@ function renderPeopleMatches() {
   const matches = getCommunityMatches(account);
   const interestPreview = account.interests.slice(0, 3).join(', ') || 'shared interests';
 
-  peopleContext.textContent = `Prepared for ${getProblemLabel(account)} with similar interests like ${interestPreview}.`;
+  peopleContext.textContent = `Prepared for ${getProblemLabel(account)} and ready to rank people and communities by similar interests like ${interestPreview}.`;
   peopleEmptyState.querySelector('p').textContent = `No live people have joined this path yet. When they do, this tab will pair ${account.firstName} with people and communities related to ${getProblemLabel(account)} and overlapping interests.`;
   peoplePlaceholderNote.classList.toggle('hidden-field', matches.length === 0);
 
@@ -495,7 +502,11 @@ function renderPeopleMatches() {
         <span class="post-pill">Coming soon</span>
       </div>
       <p>${escapeHtml(community.description)}</p>
-      <p class="match-meta">Shared interests: ${escapeHtml(community.sharedInterests.join(', ') || 'General support')}</p>
+      <p class="match-meta">${
+        community.sharedInterests.length > 0
+          ? `Shared interests: ${escapeHtml(community.sharedInterests.join(', '))}`
+          : 'Shared interests will appear here as more members join this path.'
+      }</p>
     </article>
   `).join('');
 }
@@ -520,8 +531,8 @@ function renderAccountPage() {
     allSettingsFields.forEach((field) => {
       if (field) {
         field.value = '';
-        field.disabled = false;
-        field.readOnly = true;
+        field.disabled = true;
+        field.readOnly = false;
       }
     });
     if (saveSettingsButton) saveSettingsButton.disabled = true;
@@ -648,8 +659,9 @@ document.querySelectorAll('.avatar-color').forEach((button) => {
     button.parentElement.querySelectorAll('.avatar-color').forEach((item) => item.classList.remove('active'));
     button.classList.add('active');
     avatar.className = `avatar-circle ${button.dataset.color}`;
-    if (avatar.dataset.imageUrl) {
-      avatar.style.backgroundImage = `url("${avatar.dataset.imageUrl}")`;
+    const avatarImageData = sanitizeAvatarImageData(avatar.dataset.imageUrl);
+    if (avatarImageData) {
+      avatar.style.backgroundImage = `url("${avatarImageData}")`;
       avatar.classList.add('has-image');
       avatar.textContent = '';
     } else {
@@ -776,8 +788,9 @@ if (avatarUpload) {
 
 if (cropAvatarBtn) {
   cropAvatarBtn.addEventListener('click', () => {
-    if (avatarPreview?.dataset.imageUrl) {
-      openCropper(avatarPreview.dataset.imageUrl);
+    const avatarImageData = sanitizeAvatarImageData(avatarPreview?.dataset.imageUrl);
+    if (avatarImageData) {
+      openCropper(avatarImageData);
     }
   });
 }

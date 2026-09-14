@@ -372,8 +372,10 @@
                 <p id="returningUserStatus" class="small-subtext">Create an account to unlock sign-in for later visits on this browser.</p>
               </div>
               <div class="returning-user-form">
-                <label class="field-label" for="returningEmail">Email</label>
-                <input id="returningEmail" type="email" class="text-field" placeholder="Type your account email" />
+                <label class="field-label" for="returningAccountSelect">Saved account</label>
+                <select id="returningAccountSelect" class="text-field">
+                  <option value="">No saved accounts yet</option>
+                </select>
                 <div class="returning-user-actions">
                   <button id="returningLoginButton" class="primary-btn" type="button">Sign in</button>
                   <button id="signOutButton" class="ghost-btn" type="button" disabled>Sign out</button>

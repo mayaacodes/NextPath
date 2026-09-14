@@ -38,7 +38,7 @@ const joinNowButton = document.getElementById('joinNowButton');
 const appNotice = document.getElementById('appNotice');
 const stepIndicator = document.querySelector('.step-indicator');
 const returningUserStatus = document.getElementById('returningUserStatus');
-const returningEmail = document.getElementById('returningEmail');
+const returningAccountSelect = document.getElementById('returningAccountSelect');
 const returningLoginButton = document.getElementById('returningLoginButton');
 const signOutButton = document.getElementById('signOutButton');
 const resumeOnboardingButton = document.getElementById('resumeOnboardingButton');
@@ -228,23 +228,11 @@ function saveStoredAccounts() {
 function rememberAccount(account) {
   const email = normalizeEmail(account?.email);
   if (!email) return;
-  const accountPosts = appState.posts
-    .filter((post) => post.ownerId === account.id)
-    .map((post) => ({
-      id: post.id,
-      ownerId: post.ownerId,
-      author: post.author,
-      title: post.title,
-      problem: post.problem,
-      body: post.body,
-      editable: Boolean(post.editable),
-      userEdited: Boolean(post.userEdited)
-    }));
 
   const nextEntry = {
-    ...account,
+    id: account.id,
+    firstName: account.firstName,
     email,
-    savedPosts: accountPosts,
     savedAt: Date.now()
   };
 
@@ -734,12 +722,21 @@ function updateReturningUserPanel() {
     }
   }
 
-  if (returningEmail && signedIn) {
-    returningEmail.value = account.email || '';
-  } else if (returningEmail) {
-    returningEmail.value = '';
+  if (returningAccountSelect) {
+    const options = hasStoredAccounts
+      ? appState.storedAccounts.map((stored) => `
+          <option value="${escapeHtml(stored.id)}">${escapeHtml(stored.firstName || 'Member')} · ${escapeHtml(stored.email)}</option>
+        `).join('')
+      : '<option value="">No saved accounts yet</option>';
+    returningAccountSelect.innerHTML = options;
+    if (signedIn) {
+      returningAccountSelect.value = account.id;
+    } else {
+      returningAccountSelect.value = '';
+    }
   }
 
+  if (returningLoginButton) returningLoginButton.disabled = !hasStoredAccounts;
   if (signOutButton) signOutButton.disabled = !signedIn;
   if (resumeOnboardingButton) resumeOnboardingButton.disabled = !signedIn;
 }
@@ -1169,27 +1166,34 @@ if (saveSettingsButton) {
 
 if (returningLoginButton) {
   returningLoginButton.addEventListener('click', () => {
-    const email = normalizeEmail(returningEmail?.value);
-    if (!email) {
-      setAppNotice('Enter your email to sign in.');
+    const selectedAccountId = returningAccountSelect?.value;
+    if (!selectedAccountId) {
+      setAppNotice('Select a saved account to sign in.');
       return;
     }
 
-    const matchedAccount = appState.storedAccounts.find((account) => normalizeEmail(account.email) === email);
+    const matchedAccount = appState.storedAccounts.find((account) => account.id === selectedAccountId);
     if (!matchedAccount) {
-      setAppNotice('No saved account found for that email on this browser.');
+      setAppNotice('No saved account found for that selection.');
       return;
     }
 
-    appState.currentAccount = { ...matchedAccount };
+    appState.currentAccount = {
+      id: matchedAccount.id,
+      age: Number(ageRange?.value || 15),
+      firstName: matchedAccount.firstName || 'Member',
+      email: normalizeEmail(matchedAccount.email),
+      school: 'Not shared yet',
+      bio: '',
+      locationMode: 'Global + Local',
+      interests: ['Music'],
+      goal: 'A community',
+      category: 'Loss & Grief',
+      subcategory: '',
+      avatarColor: 'blue',
+      avatarImageData: ''
+    };
     appState.hasCreatedAccount = true;
-    appState.posts = Array.isArray(matchedAccount.savedPosts)
-      ? matchedAccount.savedPosts.map((post) => ({
-          ...post,
-          ownerId: appState.currentAccount.id,
-          author: appState.currentAccount.firstName
-        }))
-      : [];
     syncProfileInputs(appState.currentAccount);
     upsertAccountPosts(appState.currentAccount);
     updateAuthenticatedUI();

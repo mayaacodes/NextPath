@@ -47,7 +47,7 @@ const joinNowButton = document.getElementById('joinNowButton');
 const appNotice = document.getElementById('appNotice');
 const stepIndicator = document.querySelector('.step-indicator');
 const returningUserStatus = document.getElementById('returningUserStatus');
-const returningAccountSelect = document.getElementById('returningAccountSelect');
+const returningAccountPicker = document.getElementById('returningAccountPicker');
 const returningLoginButton = document.getElementById('returningLoginButton');
 const signOutButton = document.getElementById('signOutButton');
 const resumeOnboardingButton = document.getElementById('resumeOnboardingButton');
@@ -454,6 +454,50 @@ function setAppNotice(message) {
   appNotice.classList.toggle('hidden-field', !message);
 }
 
+function renderSavedAccountTiles(includeAddAccountTile = false) {
+  if (!appState.storedAccounts.length) {
+    return '<p class="login-account-picker-empty">No saved accounts yet on this browser.</p>';
+  }
+
+  const accountTiles = appState.storedAccounts.map((stored) => {
+    const isSelected = stored.id === selectedLoginAccountId;
+    const avatarImageData = sanitizeAvatarImageData(stored.avatarImageData);
+    const avatarClassName = `login-account-avatar ${stored.avatarColor || 'blue'}${avatarImageData ? ' has-image' : ''}`;
+    const avatarStyle = avatarImageData ? ` style="background-image: url('${escapeHtml(avatarImageData)}');"` : '';
+    return `
+      <button
+        type="button"
+        class="login-account-tile${isSelected ? ' is-selected' : ''}"
+        data-account-id="${escapeHtml(stored.id)}"
+        role="option"
+        aria-selected="${isSelected ? 'true' : 'false'}"
+        aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
+      >
+        <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
+        <span class="login-account-copy">
+          <strong>${escapeHtml(stored.firstName || 'Member')}</strong>
+          <span>${escapeHtml(normalizeEmail(stored.email))}</span>
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  if (!includeAddAccountTile) {
+    return accountTiles;
+  }
+
+  return `
+    ${accountTiles}
+    <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" role="option" aria-selected="false" aria-label="Add account and enter email manually">
+      <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
+      <span class="login-account-copy">
+        <strong>Add account</strong>
+        <span>Use a different email</span>
+      </span>
+    </button>
+  `;
+}
+
 function navigateTo(page) {
   let nextPage = page;
   if ((nextPage === 'people' || nextPage === 'account') && !appState.currentAccount) {
@@ -854,67 +898,18 @@ function updateReturningUserPanel() {
       : 'Create an account first if this is your first visit on this browser.';
   }
 
-  if (returningAccountSelect) {
-    const previousSelection = returningAccountSelect.value;
-    const options = hasStoredAccounts
-      ? appState.storedAccounts.map((stored) => `
-          <option value="${escapeHtml(stored.id)}">${escapeHtml(stored.firstName || 'Member')} · ${escapeHtml(stored.email)}</option>
-        `).join('')
-      : '<option value="">No saved accounts yet</option>';
-    returningAccountSelect.innerHTML = options;
-    if (signedIn) {
-      returningAccountSelect.value = account.id;
-    } else if (hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === previousSelection)) {
-      returningAccountSelect.value = previousSelection;
-    } else if (hasStoredAccounts) {
-      returningAccountSelect.value = appState.storedAccounts[0].id;
-    } else {
-      returningAccountSelect.value = '';
-    }
+  if (signedIn && hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === account.id)) {
+    selectedLoginAccountId = account.id;
+  } else if (!hasStoredAccounts || !appState.storedAccounts.some((stored) => stored.id === selectedLoginAccountId)) {
+    selectedLoginAccountId = '';
+  }
+
+  if (returningAccountPicker) {
+    returningAccountPicker.innerHTML = renderSavedAccountTiles(false);
   }
 
   if (loginAccountPicker) {
-    if (signedIn && hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === account.id)) {
-      selectedLoginAccountId = account.id;
-    } else if (!hasStoredAccounts || !appState.storedAccounts.some((stored) => stored.id === selectedLoginAccountId)) {
-      selectedLoginAccountId = '';
-    }
-
-    const accountTiles = hasStoredAccounts
-      ? appState.storedAccounts.map((stored) => {
-        const isSelected = stored.id === selectedLoginAccountId;
-        const avatarImageData = sanitizeAvatarImageData(stored.avatarImageData);
-        const avatarClassName = `login-account-avatar ${stored.avatarColor || 'blue'}${avatarImageData ? ' has-image' : ''}`;
-        const avatarStyle = avatarImageData ? ` style="background-image: url('${escapeHtml(avatarImageData)}');"` : '';
-        return `
-          <button
-            type="button"
-            class="login-account-tile${isSelected ? ' is-selected' : ''}"
-            data-account-id="${escapeHtml(stored.id)}"
-            role="option"
-            aria-selected="${isSelected ? 'true' : 'false'}"
-            aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
-          >
-            <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
-            <span class="login-account-copy">
-              <strong>${escapeHtml(stored.firstName || 'Member')}</strong>
-              <span>${escapeHtml(normalizeEmail(stored.email))}</span>
-            </span>
-          </button>
-        `;
-      }).join('')
-      : '<p class="login-account-picker-empty">No saved accounts yet on this browser.</p>';
-
-    loginAccountPicker.innerHTML = `
-      ${accountTiles}
-      <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" role="option" aria-selected="false" aria-label="Add account and enter email manually">
-        <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
-        <span class="login-account-copy">
-          <strong>Add account</strong>
-          <span>Use a different email</span>
-        </span>
-      </button>
-    `;
+    loginAccountPicker.innerHTML = renderSavedAccountTiles(true);
   }
 
   if (returningLoginButton) returningLoginButton.disabled = !hasStoredAccounts;
@@ -998,6 +993,12 @@ document.querySelectorAll('.nav-link').forEach((link) => {
   link.addEventListener('click', (event) => {
     event.preventDefault();
     navigateTo(link.getAttribute('data-page'));
+  });
+});
+
+document.querySelectorAll('.social-link[href="#"]').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
   });
 });
 
@@ -1403,13 +1404,12 @@ if (saveSettingsButton) {
 
 if (returningLoginButton) {
   returningLoginButton.addEventListener('click', () => {
-    const selectedAccountId = returningAccountSelect?.value;
-    if (!selectedAccountId) {
+    if (!selectedLoginAccountId) {
       setAppNotice('Select a saved account to continue to Log In.');
       return;
     }
 
-    const matchedAccount = appState.storedAccounts.find((account) => account.id === selectedAccountId);
+    const matchedAccount = appState.storedAccounts.find((account) => account.id === selectedLoginAccountId);
     if (!matchedAccount) {
       setAppNotice('No saved account found for that selection.');
       return;
@@ -1425,6 +1425,19 @@ if (returningLoginButton) {
     }
     navigateTo('login');
     setAppNotice(`Enter the password for ${matchedAccount.firstName || 'that account'} to continue.`);
+  });
+}
+
+if (returningAccountPicker) {
+  returningAccountPicker.addEventListener('click', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile || tile.dataset.addAccount === 'true') return;
+
+    const matchedAccount = appState.storedAccounts.find((account) => account.id === tile.dataset.accountId);
+    if (!matchedAccount) return;
+
+    selectedLoginAccountId = matchedAccount.id;
+    updateReturningUserPanel();
   });
 }
 

@@ -66,6 +66,24 @@
                   <button id="homeSignupButton" class="primary-btn" type="button">Sign Up</button>
                   <button id="homeLoginButton" class="ghost-btn" type="button">Log In</button>
                 </div>
+
+                <div class="social-row" aria-label="Socials">
+                  <span class="social-label">Socials</span>
+                  <div class="social-links">
+                    <a class="social-link" href="#" aria-label="Instagram link coming soon" title="Instagram link coming soon">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <circle cx="17.4" cy="6.6" r="1.1" class="social-icon-fill"></circle>
+                      </svg>
+                    </a>
+                    <a class="social-link" href="#" aria-label="TikTok link coming soon" title="TikTok link coming soon">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M14.2 4.5c.8 2 2.3 3.3 4.3 3.7v3a7.3 7.3 0 0 1-4.1-1.4v5.2a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.2.1v3.1a2.4 2.4 0 1 0 1.2 2.1V4.5h3z"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
               </div>
 
               <div class="info-panel">
@@ -109,6 +127,24 @@
               <div class="cta-row">
                 <button id="homePeopleButton" class="primary-btn" type="button">See People matches</button>
                 <button id="homeAccountButton" class="ghost-btn" type="button">Open My Account</button>
+              </div>
+
+              <div class="social-row" aria-label="Socials">
+                <span class="social-label">Socials</span>
+                <div class="social-links">
+                  <a class="social-link" href="#" aria-label="Instagram link coming soon" title="Instagram link coming soon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <circle cx="17.4" cy="6.6" r="1.1" class="social-icon-fill"></circle>
+                    </svg>
+                  </a>
+                  <a class="social-link" href="#" aria-label="TikTok link coming soon" title="TikTok link coming soon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M14.2 4.5c.8 2 2.3 3.3 4.3 3.7v3a7.3 7.3 0 0 1-4.1-1.4v5.2a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.2.1v3.1a2.4 2.4 0 1 0 1.2 2.1V4.5h3z"></path>
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -474,10 +510,8 @@
                 <p id="returningUserStatus" class="small-subtext">Create an account to unlock sign-in for later visits on this browser.</p>
               </div>
               <div class="returning-user-form">
-                <label class="field-label" for="returningAccountSelect">Saved account</label>
-                <select id="returningAccountSelect" class="text-field">
-                  <option value="">No saved accounts yet</option>
-                </select>
+                <p id="returningAccountPickerLabel" class="field-label">Saved accounts</p>
+                <div id="returningAccountPicker" class="login-account-picker" role="listbox" aria-labelledby="returningAccountPickerLabel"></div>
                 <div class="returning-user-actions">
                   <button id="returningLoginButton" class="primary-btn" type="button">Sign in</button>
                   <button id="signOutButton" class="ghost-btn" type="button" disabled>Sign out</button>

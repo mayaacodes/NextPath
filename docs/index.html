@@ -50,19 +50,84 @@
       <p id="appNotice" class="app-notice hidden-field" role="status" aria-live="polite"></p>
 
       <main class="onboarding-app">
-        <!-- Home Page (Main Onboarding) -->
+        <!-- Home Page -->
         <div id="home-page" class="page-content active">
+          <div class="page-card auth-home-card">
+            <div id="homeGuestPanel" class="auth-home-panel">
+              <div class="intro-copy">
+                <p class="eyebrow">You are not alone</p>
+                <h1 class="bubble">Welcome to NextPath</h1>
+                <p class="subtext">
+                  We help you find a supportive community based on your age, your
+                  situation, and the kind of guidance you need.
+                </p>
+
+                <div class="cta-row">
+                  <button id="homeSignupButton" class="primary-btn" type="button">Sign Up</button>
+                  <button id="homeLoginButton" class="ghost-btn" type="button">Log In</button>
+                </div>
+              </div>
+
+              <div class="info-panel">
+                <div class="mini-card">
+                  <span class="mini-label">Age-based matching</span>
+                  <strong>Teen / young adult / adult</strong>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-label">Community types</span>
+                  <strong>Global + local</strong>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-label">Support</span>
+                  <strong>Groups, DMs, and resources</strong>
+                </div>
+              </div>
+            </div>
+
+            <div id="homeAuthenticatedPanel" class="auth-home-panel hidden-field">
+              <div class="card-header">
+                <span class="eyebrow small">Welcome back</span>
+                <h1 class="bubble">Your NextPath home</h1>
+                <p id="homeAuthenticatedCopy" class="subtext">You're signed in and ready to pick up where you left off.</p>
+              </div>
+
+              <div class="info-panel auth-dashboard-grid">
+                <div class="mini-card">
+                  <span class="mini-label">Community access</span>
+                  <strong>People matches and support spaces are ready.</strong>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-label">Your profile</span>
+                  <strong>Review your onboarding details and saved settings.</strong>
+                </div>
+                <div class="mini-card">
+                  <span class="mini-label">Saved on this browser</span>
+                  <strong>Refresh safely and stay on your signed-in home.</strong>
+                </div>
+              </div>
+
+              <div class="cta-row">
+                <button id="homePeopleButton" class="primary-btn" type="button">See People matches</button>
+                <button id="homeAccountButton" class="ghost-btn" type="button">Open My Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signup Page -->
+        <div id="signup-page" class="page-content">
           <section class="screen active" data-step="1">
             <div class="intro-copy">
-              <p class="eyebrow">You are not alone</p>
-              <h1 class="bubble">Welcome to NextPath</h1>
+              <p class="eyebrow">Create your account</p>
+              <h1 class="bubble">Start your NextPath signup</h1>
               <p class="subtext">
-                We help you find a supportive community based on your age, your
-                situation, and the kind of guidance you need.
+                Tell us a little about yourself so we can guide you toward the
+                right support, community, and resources.
               </p>
 
               <div class="cta-row">
-                <button class="primary-btn next-btn">Get started</button>
+                <button class="primary-btn next-btn" type="button">Start Sign Up</button>
+                <button id="signupLoginButton" class="ghost-btn" type="button">Log In Instead</button>
               </div>
             </div>
 
@@ -198,6 +263,9 @@
                 <label class="field-label" for="emailAddress">Email</label>
                 <input id="emailAddress" type="email" placeholder="Type your email here" class="text-field" aria-describedby="emailHelp" required />
                 <p id="emailHelp" class="field-help">For emails and updates.</p>
+                <label class="field-label" for="password">Password</label>
+                <input id="password" type="password" placeholder="Create a password" class="text-field" autocomplete="new-password" required />
+                <p id="passwordHelp" class="field-help">Required to create your account and log back in later.</p>
                 <label class="field-label">School / College</label>
                 <div class="school-search">
                   <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
@@ -274,6 +342,42 @@
               <button id="joinNowButton" class="primary-btn" type="button">Join Now</button>
             </div>
           </section>
+        </div>
+
+        <!-- Login Page -->
+        <div id="login-page" class="page-content">
+          <div class="page-card login-page-card">
+            <div class="card-header">
+              <span class="eyebrow small">Returning user</span>
+              <h1 class="bubble">Log in to NextPath</h1>
+              <p class="subtext">Use the email and password from your saved account on this browser.</p>
+            </div>
+
+            <form id="loginForm" class="returning-user-panel login-panel">
+              <div>
+                <h3>Saved on this browser</h3>
+                <p id="loginStatus" class="small-subtext">Create an account first if this is your first visit on this browser.</p>
+              </div>
+              <div class="returning-user-form">
+                <label class="field-label" for="loginAccountSelect">Remembered account</label>
+                <select id="loginAccountSelect" class="text-field">
+                  <option value="">Choose an account</option>
+                </select>
+
+                <label class="field-label" for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" class="text-field" autocomplete="email" placeholder="Type your email here" required />
+
+                <label class="field-label" for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" class="text-field" autocomplete="current-password" placeholder="Type your password here" required />
+                <p class="field-help">Passwords are required for new signups and for log in.</p>
+
+                <div class="returning-user-actions">
+                  <button class="primary-btn" type="submit">Log In</button>
+                  <button id="loginBackButton" class="ghost-btn" type="button">Back to Home</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
 
         <!-- About Us Page -->

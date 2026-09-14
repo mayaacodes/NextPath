@@ -6,11 +6,40 @@ const ageRange = document.getElementById('ageRange');
 const ageValue = document.getElementById('ageValue');
 const ageNote = document.getElementById('ageNote');
 const ageTag = document.getElementById('ageTag');
+const firstNameInput = document.getElementById('firstName');
+const emailInput = document.getElementById('emailAddress');
+const profileBio = document.getElementById('profileBio');
+const accountSummary = document.getElementById('accountSummary');
+const accountSummaryButton = document.getElementById('accountSummaryButton');
+const accountSettingsButton = document.getElementById('accountSettingsButton');
+const accountSummaryAvatar = document.getElementById('accountSummaryAvatar');
+const accountSummaryName = document.getElementById('accountSummaryName');
+const accountSummaryMeta = document.getElementById('accountSummaryMeta');
+const authOnlyElements = Array.from(document.querySelectorAll('[data-auth-only="true"]'));
+const peopleContext = document.getElementById('peopleContext');
+const peopleEmptyState = document.getElementById('peopleEmptyState');
+const peopleMatches = document.getElementById('peopleMatches');
+const peoplePlaceholderNote = document.getElementById('peoplePlaceholderNote');
+const accountContext = document.getElementById('accountContext');
+const settingsOwnerNote = document.getElementById('settingsOwnerNote');
+const settingsName = document.getElementById('settingsName');
+const settingsEmail = document.getElementById('settingsEmail');
+const settingsProblem = document.getElementById('settingsProblem');
+const settingsSchool = document.getElementById('settingsSchool');
+const settingsLocation = document.getElementById('settingsLocation');
+const saveSettingsButton = document.getElementById('saveSettingsButton');
+const accountPosts = document.getElementById('accountPosts');
+const joinNowButton = document.getElementById('joinNowButton');
 
 let currentStep = 0;
 let selectedGoal = 'A community';
 let selectedCategory = 'Loss & Grief';
 let selectedSubcategory = '';
+
+const appState = {
+  currentAccount: null,
+  posts: []
+};
 
 const pathwayMap = {
   'A community': {
@@ -43,10 +72,10 @@ const subcategoryMap = {
   'Loss & Grief': ['Family member', 'Friend', 'Pet', 'A relationship', 'A home or routine', 'A future I imagined', 'Other'],
   'Home & Family': ['Homelessness', 'Housing insecurity', 'Eviction risk', 'Divorce or separation', 'Family conflict', 'Caregiving', 'Unsafe home', 'Setting boundaries', 'Other'],
   'Money & Work': ['Financial hardship', 'Homelessness', 'Food insecurity', 'Job search', 'Job stress', 'Debt', 'Career uncertainty', 'Money management', 'Other'],
-  'School': ['Bullying', 'Academics', 'College applications', 'College transition', 'Friends and belonging', 'School stress', 'Accessibility support', 'Other'],
+  School: ['Bullying', 'Academics', 'College applications', 'College transition', 'Friends and belonging', 'School stress', 'Accessibility support', 'Other'],
   'Mental Wellbeing': ['Depression', 'Anxiety', 'OCD', 'BPD', 'Stress', 'Loneliness', 'Self-esteem', 'Burnout', 'Other'],
   'Physical Health': ['Autoimmune condition', 'Amputation', 'Asthma', 'Diabetes', 'Chronic pain', 'Disability support', 'Injury recovery', 'Medical care access', 'Other'],
-  'Relationships': ['Breakup', 'Friendship', 'Family relationship', 'Conflict', 'Trust', 'Communication', 'Boundaries', 'Other'],
+  Relationships: ['Breakup', 'Friendship', 'Family relationship', 'Conflict', 'Trust', 'Communication', 'Boundaries', 'Other'],
   'Moving & Change': ['Moving', 'Immigration', 'Starting over', 'Big life transition', 'Identity change', 'Grief after change', 'Other'],
   'Finding Community': ['Friends', 'Belonging', 'Support circle', 'Mentorship', 'Group chats', 'Local activities', 'Other'],
   'Personal Growth': ['Goals', 'Career', 'Hobbies', 'Confidence', 'Self-improvement', 'Creativity', 'Other'],
@@ -85,12 +114,12 @@ const goalDetails = {
     body: 'Next steps for finding work, learning skills, and building confidence.',
     actions: ['Browse job resources', 'Build a resume', 'Find training']
   },
-  'Resources': {
+  Resources: {
     title: 'Your resource pathway',
     body: 'A starting point for trusted information and practical help.',
     actions: ['Browse resources', 'Save for later', 'Ask for guidance']
   },
-  'Guidance': {
+  Guidance: {
     title: 'Your guidance pathway',
     body: 'Small, clear next steps for the decision or change in front of you.',
     actions: ['See guided steps', 'Find a mentor', 'Write a plan']
@@ -101,6 +130,54 @@ const goalDetails = {
     actions: ['Describe what you need', 'Explore all pathways', 'Talk with a guide']
   }
 };
+
+const placeholderCommunities = [
+  {
+    id: 'grief-creative-circle',
+    name: 'Grief + Creative Circle',
+    problems: ['Loss & Grief'],
+    interests: ['Music', 'Art', 'Writing', 'Creative projects'],
+    description: 'A future community for members processing loss through conversation, playlists, and shared projects.'
+  },
+  {
+    id: 'home-reset-network',
+    name: 'Home Reset Network',
+    problems: ['Home & Family', 'Moving & Change'],
+    interests: ['Cooking', 'Technology', 'Volunteering', 'Friends'],
+    description: 'A placeholder space for people rebuilding routines, housing stability, and supportive connections.'
+  },
+  {
+    id: 'school-support-studio',
+    name: 'School Support Studio',
+    problems: ['School', 'Mental Wellbeing'],
+    interests: ['Reading', 'Writing', 'Technology', 'Wellbeing'],
+    description: 'Designed for students and young adults who want encouragement, study support, and low-pressure check-ins.'
+  },
+  {
+    id: 'growth-work-collective',
+    name: 'Growth + Work Collective',
+    problems: ['Money & Work', 'Personal Growth'],
+    interests: ['Technology', 'Sports', 'Volunteering', 'Creative projects'],
+    description: 'A future group for career confidence, shared goals, and practical encouragement.'
+  },
+  {
+    id: 'wellbeing-friends-lounge',
+    name: 'Wellbeing + Friends Lounge',
+    problems: ['Mental Wellbeing', 'Relationships', 'Finding Community'],
+    interests: ['Wellbeing', 'Friends', 'Gaming', 'Animals'],
+    description: 'A placeholder match for gentle support, new friendships, and community-first conversations.'
+  }
+];
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[character]));
+}
 
 function getAgeGroup(age) {
   if (age <= 12) return 'Kids support circle';
@@ -114,6 +191,35 @@ function getCommunityRange(age) {
   const lower = Math.max(7, age - 3);
   const upper = Math.min(100, age + 3);
   return `You will be placed within ages ${lower}-${upper}`;
+}
+
+function getProfileInitial(name) {
+  return (name || 'A').trim().charAt(0).toUpperCase() || 'A';
+}
+
+function getSelectedInterests() {
+  return Array.from(document.querySelectorAll('.interest-tags span.active')).map((tag) => tag.textContent.trim());
+}
+
+function getLocationPreference() {
+  return document.querySelector('.toggle-btn.active')?.textContent.trim() || 'Global + Local';
+}
+
+function getSelectedAvatarColor() {
+  return document.querySelector('.avatar-color.active')?.dataset.color || 'blue';
+}
+
+function getAvatarImageData() {
+  return avatarPreview?.dataset.imageUrl || '';
+}
+
+function getProblemLabel(account = appState.currentAccount) {
+  if (!account) return '';
+  return account.subcategory ? `${account.category}: ${account.subcategory}` : account.category;
+}
+
+function canManageOwnerContent(ownerId) {
+  return Boolean(appState.currentAccount && appState.currentAccount.id === ownerId);
 }
 
 function updateAgeDisplay() {
@@ -158,19 +264,23 @@ function renderSubcategoryScreen(category) {
 function renderResultScreen() {
   const details = goalDetails[selectedGoal] || goalDetails['A community'];
   const resultScreen = screens[6];
+  const accountName = appState.currentAccount?.firstName ? `${appState.currentAccount.firstName}'s` : 'Your';
+
   resultScreen.querySelector('h2.bubble').textContent = details.title;
   resultScreen.querySelector('.match-box h3').textContent = selectedSubcategory
     ? `${selectedCategory}: ${selectedSubcategory}`
     : selectedCategory;
-  resultScreen.querySelector('.match-box p').textContent = details.body;
+  resultScreen.querySelector('.match-box p').textContent = `${details.body} ${accountName} account is now ready in the top bar.`;
   resultScreen.querySelector('.match-box ul').innerHTML = [
     `Age-matched: ${ageTag.textContent}`,
     `Pathway: ${selectedGoal}`,
-    'Private profile and avatar options',
-    'Local and global choices'
+    `Account owner: ${appState.currentAccount?.firstName || 'Pending account'}`,
+    'People tab prepared for similar-interest matching'
   ].map((item) => `<li>${item}</li>`).join('');
   resultScreen.querySelector('.action-grid').innerHTML = details.actions
-    .map((action) => `<button class="choice-card">${action}</button>`).join('');
+    .concat('See your People matches')
+    .map((action) => `<button class="choice-card">${action}</button>`)
+    .join('');
 }
 
 function showStep(stepIndex) {
@@ -179,37 +289,311 @@ function showStep(stepIndex) {
   stepPills.forEach((pill, index) => pill.classList.toggle('active', index === currentStep));
 }
 
-// Navigation for pages
 function navigateTo(page) {
+  let nextPage = page;
+  if ((nextPage === 'people' || nextPage === 'account') && !appState.currentAccount) {
+    nextPage = 'home';
+  }
+
   const pages = document.querySelectorAll('.page-content');
   const navLinks = document.querySelectorAll('.nav-link');
-  
-  pages.forEach(p => p.classList.remove('active'));
-  navLinks.forEach(link => link.classList.remove('active'));
-  
-  const targetPage = document.getElementById(`${page}-page`);
+
+  pages.forEach((currentPage) => currentPage.classList.remove('active'));
+  navLinks.forEach((link) => link.classList.remove('active'));
+
+  const targetPage = document.getElementById(`${nextPage}-page`);
   if (targetPage) {
     targetPage.classList.add('active');
   }
-  
-  const activeLink = document.querySelector(`[data-page="${page}"]`);
+
+  const activeLink = document.querySelector(`[data-page="${nextPage}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
 }
 
-// Add click handlers for navigation links
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const page = link.getAttribute('data-page');
-    navigateTo(page);
+function updateAvatarLetter() {
+  const initial = getProfileInitial(firstNameInput?.value || appState.currentAccount?.firstName);
+
+  if (avatarPreview && !avatarPreview.classList.contains('has-image')) {
+    avatarPreview.textContent = initial;
+  }
+
+  if (accountSummaryAvatar && !accountSummaryAvatar.classList.contains('has-image')) {
+    accountSummaryAvatar.textContent = initial;
+  }
+}
+
+function syncAccountAvatar(account) {
+  if (!accountSummaryAvatar) return;
+
+  accountSummaryAvatar.className = `account-chip-avatar ${account.avatarColor || 'blue'}`;
+  if (account.avatarImageData) {
+    accountSummaryAvatar.style.backgroundImage = `url("${account.avatarImageData}")`;
+    accountSummaryAvatar.classList.add('has-image');
+    accountSummaryAvatar.textContent = '';
+  } else {
+    accountSummaryAvatar.style.backgroundImage = '';
+    accountSummaryAvatar.classList.remove('has-image');
+    accountSummaryAvatar.textContent = getProfileInitial(account.firstName);
+  }
+}
+
+function buildSystemPost(account) {
+  return {
+    id: 'nextpath-team-update',
+    ownerId: 'nextpath-team',
+    author: 'NextPath Team',
+    title: 'Community update',
+    problem: account.category,
+    body: `We are preparing people and community matches for ${getProblemLabel(account)}. Only the account owner will be able to edit their own posts and settings.`,
+    editable: false
+  };
+}
+
+function buildOwnerPost(account) {
+  return {
+    id: `account-post-${account.id}`,
+    ownerId: account.id,
+    author: account.firstName,
+    title: 'Your intro post',
+    problem: getProblemLabel(account),
+    body: account.bio || `Looking for support around ${getProblemLabel(account)} and hoping to connect through ${account.interests.slice(0, 2).join(' and ') || 'shared interests'}.`,
+    editable: true,
+    userEdited: false
+  };
+}
+
+function upsertAccountPosts(account) {
+  const existingOwnerPost = appState.posts.find((post) => post.ownerId === account.id);
+  const nextSystemPost = buildSystemPost(account);
+
+  if (existingOwnerPost) {
+    existingOwnerPost.author = account.firstName;
+    existingOwnerPost.problem = getProblemLabel(account);
+    if (!existingOwnerPost.userEdited) {
+      existingOwnerPost.body = account.bio || existingOwnerPost.body;
+    }
+    appState.posts = [existingOwnerPost, nextSystemPost];
+    return;
+  }
+
+  appState.posts = [buildOwnerPost(account), nextSystemPost];
+}
+
+function renderAccountPosts() {
+  if (!accountPosts) return;
+
+  if (!appState.currentAccount) {
+    accountPosts.innerHTML = `
+      <div class="empty-state">
+        <p>Create an account to unlock your posts and see owner-only editing controls.</p>
+      </div>
+    `;
+    return;
+  }
+
+  accountPosts.innerHTML = appState.posts.map((post) => {
+    const editable = canManageOwnerContent(post.ownerId);
+    return `
+      <article class="post-card">
+        <div class="post-card-header">
+          <div>
+            <h3>${escapeHtml(post.title)}</h3>
+            <p class="match-meta">${escapeHtml(post.author)} · ${escapeHtml(post.problem)}</p>
+          </div>
+          <span class="post-pill">${editable ? 'Owner controls' : 'Read only'}</span>
+        </div>
+        ${editable ? `
+          <label class="field-label" for="post-editor-${escapeHtml(post.id)}">Edit post</label>
+          <textarea id="post-editor-${escapeHtml(post.id)}" class="text-field area" data-post-editor="${escapeHtml(post.id)}">${escapeHtml(post.body)}</textarea>
+          <button class="primary-btn post-save-btn" type="button" data-post-id="${escapeHtml(post.id)}">Save post</button>
+        ` : `
+          <p>${escapeHtml(post.body)}</p>
+          <p class="owner-note">Only ${escapeHtml(post.author)} can edit this post.</p>
+        `}
+      </article>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.post-save-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+      const postId = button.getAttribute('data-post-id');
+      const post = appState.posts.find((item) => item.id === postId);
+      if (!post || !canManageOwnerContent(post.ownerId)) return;
+
+      const editor = document.querySelector(`[data-post-editor="${postId}"]`);
+      const nextBody = editor?.value.trim();
+      if (!nextBody) return;
+
+      post.body = nextBody;
+      post.userEdited = true;
+      renderAccountPosts();
+    });
+  });
+}
+
+function getCommunityMatches(account) {
+  return placeholderCommunities
+    .map((community) => {
+      const sharedInterests = community.interests.filter((interest) => account.interests.includes(interest));
+      const problemMatches = community.problems.includes(account.category) || community.problems.includes(account.subcategory);
+      if (!problemMatches) return null;
+
+      return {
+        ...community,
+        sharedInterests
+      };
+    })
+    .filter(Boolean)
+    .sort((first, second) => second.sharedInterests.length - first.sharedInterests.length);
+}
+
+function renderPeopleMatches() {
+  if (!peopleContext || !peopleEmptyState || !peopleMatches || !peoplePlaceholderNote) return;
+
+  if (!appState.currentAccount) {
+    peopleContext.textContent = 'Create your account to unlock personalized people and community matching.';
+    peopleMatches.innerHTML = '';
+    peoplePlaceholderNote.classList.add('hidden-field');
+    return;
+  }
+
+  const account = appState.currentAccount;
+  const matches = getCommunityMatches(account);
+  const interestPreview = account.interests.slice(0, 3).join(', ') || 'shared interests';
+
+  peopleContext.textContent = `Prepared for ${getProblemLabel(account)} with similar interests like ${interestPreview}.`;
+  peopleEmptyState.querySelector('p').textContent = `No live people have joined this path yet. When they do, this tab will pair ${account.firstName} with people and communities related to ${getProblemLabel(account)} and overlapping interests.`;
+  peoplePlaceholderNote.classList.toggle('hidden-field', matches.length === 0);
+
+  peopleMatches.innerHTML = matches.map((community) => `
+    <article class="people-card">
+      <div class="people-card-header">
+        <div>
+          <h3>${escapeHtml(community.name)}</h3>
+          <p class="match-meta">Problem match: ${escapeHtml(community.problems.join(', '))}</p>
+        </div>
+        <span class="post-pill">Coming soon</span>
+      </div>
+      <p>${escapeHtml(community.description)}</p>
+      <p class="match-meta">Shared interests: ${escapeHtml(community.sharedInterests.join(', ') || 'General support')}</p>
+    </article>
+  `).join('');
+}
+
+function syncProfileInputs(account) {
+  if (firstNameInput) firstNameInput.value = account.firstName;
+  if (emailInput) emailInput.value = account.email;
+  if (schoolSearch) schoolSearch.value = account.school === 'Not shared yet' ? '' : account.school;
+  if (profileBio) profileBio.value = account.bio;
+  updateAvatarLetter();
+}
+
+function renderAccountPage() {
+  const account = appState.currentAccount;
+  const canUseSettings = Boolean(account && canManageOwnerContent(account.id));
+  const editableInputs = [settingsName, settingsEmail, settingsSchool, settingsLocation];
+
+  if (!account) {
+    if (accountContext) accountContext.textContent = 'Finish onboarding to see your account controls, settings, and posts.';
+    if (settingsOwnerNote) settingsOwnerNote.textContent = 'Only the account owner can use these settings.';
+    [settingsName, settingsEmail, settingsProblem, settingsSchool, settingsLocation].forEach((field) => {
+      if (field) {
+        field.value = '';
+        field.disabled = true;
+      }
+    });
+    if (saveSettingsButton) saveSettingsButton.disabled = true;
+    renderAccountPosts();
+    return;
+  }
+
+  if (accountContext) {
+    accountContext.textContent = `${account.firstName}, this account owns its settings and only your posts can be edited here.`;
+  }
+  if (settingsOwnerNote) {
+    settingsOwnerNote.textContent = canUseSettings
+      ? 'Signed in as the account owner. Only your account can use these settings.'
+      : 'Only the account owner can use these settings.';
+  }
+
+  if (settingsName) settingsName.value = account.firstName;
+  if (settingsEmail) settingsEmail.value = account.email;
+  if (settingsProblem) {
+    settingsProblem.value = getProblemLabel(account);
+    settingsProblem.disabled = false;
+    settingsProblem.readOnly = true;
+  }
+  if (settingsSchool) settingsSchool.value = account.school;
+  if (settingsLocation) settingsLocation.value = account.locationMode;
+
+  editableInputs.forEach((field) => {
+    if (field) field.disabled = !canUseSettings;
+  });
+  if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;
+
+  renderAccountPosts();
+}
+
+function updateAuthenticatedUI() {
+  const account = appState.currentAccount;
+  const isAuthenticated = Boolean(account);
+
+  authOnlyElements.forEach((element) => {
+    element.classList.toggle('hidden-field', !isAuthenticated);
+  });
+
+  if (accountSummary) {
+    accountSummary.classList.toggle('hidden-field', !isAuthenticated);
+  }
+
+  if (account && accountSummaryName && accountSummaryMeta) {
+    accountSummaryName.textContent = account.firstName;
+    accountSummaryMeta.textContent = `${account.email} · ${getProblemLabel(account)}`;
+    syncAccountAvatar(account);
+  }
+
+  renderPeopleMatches();
+  renderAccountPage();
+}
+
+function validateProfileStep() {
+  if (firstNameInput && !firstNameInput.reportValidity()) return false;
+  if (emailInput && !emailInput.reportValidity()) return false;
+  return true;
+}
+
+function saveAccountFromProfile() {
+  const nextAccount = {
+    id: appState.currentAccount?.id || `account-${Date.now()}`,
+    firstName: firstNameInput?.value.trim() || 'Member',
+    email: emailInput?.value.trim() || '',
+    school: schoolSearch?.value.trim() || otherSchool?.value.trim() || 'Not shared yet',
+    bio: profileBio?.value.trim() || '',
+    locationMode: getLocationPreference(),
+    interests: getSelectedInterests(),
+    goal: selectedGoal,
+    category: selectedCategory,
+    subcategory: selectedSubcategory,
+    avatarColor: getSelectedAvatarColor(),
+    avatarImageData: getAvatarImageData()
+  };
+
+  appState.currentAccount = nextAccount;
+  upsertAccountPosts(nextAccount);
+  updateAuthenticatedUI();
+}
+
+document.querySelectorAll('.nav-link').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    navigateTo(link.getAttribute('data-page'));
   });
 });
 
-// Add click handlers for back to home buttons
-document.querySelectorAll('.back-to-home-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+document.querySelectorAll('.back-to-home-btn').forEach((button) => {
+  button.addEventListener('click', () => {
     navigateTo('home');
   });
 });
@@ -237,11 +621,21 @@ document.querySelectorAll('.avatar-color').forEach((button) => {
     button.parentElement.querySelectorAll('.avatar-color').forEach((item) => item.classList.remove('active'));
     button.classList.add('active');
     avatar.className = `avatar-circle ${button.dataset.color}`;
-    avatar.textContent = 'A';
+    if (avatar.dataset.imageUrl) {
+      avatar.style.backgroundImage = `url("${avatar.dataset.imageUrl}")`;
+      avatar.classList.add('has-image');
+      avatar.textContent = '';
+    } else {
+      avatar.textContent = getProfileInitial(firstNameInput?.value || appState.currentAccount?.firstName);
+    }
+
+    if (appState.currentAccount) {
+      appState.currentAccount.avatarColor = button.dataset.color;
+      updateAuthenticatedUI();
+    }
   });
 });
 
-// Enhanced Avatar Cropper with Popup Modal
 const avatarUpload = document.getElementById('avatarUpload');
 const cropAvatarBtn = document.getElementById('cropAvatarBtn');
 const avatarCropperModal = document.getElementById('avatarCropperModal');
@@ -263,79 +657,71 @@ let canvasContext = null;
 function initializeCanvas(imageSrc) {
   const img = new Image();
   img.onload = function() {
-    const canvas = document.getElementById('cropCanvas');
+    const canvas = cropCanvas;
     const wrapper = canvas.parentElement;
-    
-    // Set canvas dimensions to match wrapper
+
     canvas.width = wrapper.offsetWidth;
     canvas.height = wrapper.offsetHeight;
-    
+
     canvasContext = canvas.getContext('2d');
     currentImageData = {
-      img: img,
+      img,
       originalWidth: img.width,
       originalHeight: img.height
     };
-    
+
     drawCropPreview();
   };
   img.src = imageSrc;
 }
 
 function drawCropPreview() {
-  if (!canvasContext || !currentImageData) return;
-  
-  const canvas = document.getElementById('cropCanvas');
-  const zoom = parseInt(avatarZoom.value) / 100;
-  const offsetX = parseInt(avatarX.value);
-  const offsetY = parseInt(avatarY.value);
-  
-  // Calculate displayed dimensions
+  if (!canvasContext || !currentImageData || !cropCanvas) return;
+
+  const zoom = parseInt(avatarZoom.value, 10) / 100;
+  const offsetX = parseInt(avatarX.value, 10);
+  const offsetY = parseInt(avatarY.value, 10);
   const displayWidth = currentImageData.originalWidth * zoom;
   const displayHeight = currentImageData.originalHeight * zoom;
-  
-  // Calculate position based on offset
-  const x = (canvas.width - displayWidth) / 2 + (offsetX / 100) * (displayWidth - canvas.width);
-  const y = (canvas.height - displayHeight) / 2 + (offsetY / 100) * (displayHeight - canvas.height);
-  
-  // Clear canvas
+  const x = (cropCanvas.width - displayWidth) / 2 + (offsetX / 100) * (displayWidth - cropCanvas.width);
+  const y = (cropCanvas.height - displayHeight) / 2 + (offsetY / 100) * (displayHeight - cropCanvas.height);
+
   canvasContext.fillStyle = '#f0f0f0';
-  canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Draw image
+  canvasContext.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
   canvasContext.drawImage(currentImageData.img, x, y, displayWidth, displayHeight);
 }
 
 function updateCropControls() {
   if (!avatarZoom || !avatarX || !avatarY) return;
-  
-  zoomValue.textContent = avatarZoom.value + '%';
-  xValue.textContent = avatarX.value + '%';
-  yValue.textContent = avatarY.value + '%';
-  
+
+  zoomValue.textContent = `${avatarZoom.value}%`;
+  xValue.textContent = `${avatarX.value}%`;
+  yValue.textContent = `${avatarY.value}%`;
   drawCropPreview();
 }
 
 function saveCropToPreview() {
-  if (!canvasContext || !currentImageData || !avatarPreview) return;
-  
-  const canvas = document.getElementById('cropCanvas');
-  const croppedImageData = canvas.toDataURL('image/png');
-  
+  if (!canvasContext || !currentImageData || !avatarPreview || !cropCanvas) return;
+
+  const croppedImageData = cropCanvas.toDataURL('image/png');
+  avatarPreview.dataset.imageUrl = croppedImageData;
   avatarPreview.style.backgroundImage = `url("${croppedImageData}")`;
   avatarPreview.classList.add('has-image');
   avatarPreview.textContent = '';
+
+  if (appState.currentAccount) {
+    appState.currentAccount.avatarImageData = croppedImageData;
+    updateAuthenticatedUI();
+  }
 }
 
 function openCropper(imageSrc) {
-  if (!avatarCropperModal) return;
+  if (!avatarCropperModal || !avatarZoom || !avatarX || !avatarY) return;
   avatarCropperModal.classList.add('show');
-  
-  // Reset controls
   avatarZoom.value = 100;
   avatarX.value = 0;
   avatarY.value = 0;
-  
+
   if (imageSrc) {
     initializeCanvas(imageSrc);
   }
@@ -348,30 +734,27 @@ function closeCropperModal() {
   canvasContext = null;
 }
 
-// Handle avatar upload
 if (avatarUpload) {
   avatarUpload.addEventListener('change', () => {
     const file = avatarUpload.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
-    reader.onload = function(e) {
-      openCropper(e.target.result);
+    reader.onload = function(event) {
+      openCropper(event.target.result);
     };
     reader.readAsDataURL(file);
   });
 }
 
-// Handle crop button click
 if (cropAvatarBtn) {
   cropAvatarBtn.addEventListener('click', () => {
-    if (avatarPreview && avatarPreview.style.backgroundImage) {
-      openCropper(avatarPreview.style.backgroundImage.slice(5, -2));
+    if (avatarPreview?.dataset.imageUrl) {
+      openCropper(avatarPreview.dataset.imageUrl);
     }
   });
 }
 
-// Close cropper modal handlers
 if (closeCropper) {
   closeCropper.addEventListener('click', closeCropperModal);
 }
@@ -387,16 +770,14 @@ if (applyCrop) {
   });
 }
 
-// Close modal when clicking on backdrop
 if (avatarCropperModal) {
-  avatarCropperModal.addEventListener('click', (e) => {
-    if (e.target === avatarCropperModal) {
+  avatarCropperModal.addEventListener('click', (event) => {
+    if (event.target === avatarCropperModal) {
       closeCropperModal();
     }
   });
 }
 
-// Update crop preview on control changes
 if (avatarZoom) {
   avatarZoom.addEventListener('input', updateCropControls);
 }
@@ -409,9 +790,8 @@ if (avatarY) {
   avatarY.addEventListener('input', updateCropControls);
 }
 
-// Handle canvas resizing on window resize
 window.addEventListener('resize', () => {
-  if (currentImageData && avatarCropperModal.classList.contains('show')) {
+  if (currentImageData && avatarCropperModal?.classList.contains('show')) {
     drawCropPreview();
   }
 });
@@ -457,6 +837,7 @@ if (schoolSearch && schoolSuggestions && schoolAbbreviation && otherSchool) {
       schoolSuggestions.classList.remove('visible');
       return;
     }
+
     const matches = schoolDirectory.filter((school) => school.toLowerCase().includes(query)).slice(0, 8);
     schoolSuggestions.innerHTML = matches.map((school) => `<button type="button" class="school-suggestion">${school}<small>${getSchoolInitials(school)}</small></button>`).join('');
     schoolSuggestions.classList.toggle('visible', matches.length > 0);
@@ -493,8 +874,11 @@ nextButtons.forEach((button) => {
     } else if (activeScreen.dataset.step === '5') {
       selectedSubcategory = getActiveChoice(activeScreen);
     } else if (activeScreen.dataset.step === '6') {
+      if (!validateProfileStep()) return;
+      saveAccountFromProfile();
       renderResultScreen();
     }
+
     showStep(currentStep + 1);
   });
 });
@@ -504,4 +888,46 @@ if (ageRange) {
   updateAgeDisplay();
 }
 
+if (firstNameInput) {
+  firstNameInput.addEventListener('input', updateAvatarLetter);
+}
+
+if (accountSummaryButton) {
+  accountSummaryButton.addEventListener('click', () => navigateTo('account'));
+}
+
+if (accountSettingsButton) {
+  accountSettingsButton.addEventListener('click', () => navigateTo('account'));
+}
+
+if (joinNowButton) {
+  joinNowButton.addEventListener('click', () => navigateTo('people'));
+}
+
+if (saveSettingsButton) {
+  saveSettingsButton.addEventListener('click', () => {
+    const account = appState.currentAccount;
+    if (!account || !canManageOwnerContent(account.id)) return;
+    if (settingsName && !settingsName.value.trim()) return;
+    if (settingsEmail && !settingsEmail.reportValidity()) return;
+
+    account.firstName = settingsName.value.trim();
+    account.email = settingsEmail.value.trim();
+    account.school = settingsSchool.value.trim() || 'Not shared yet';
+    account.locationMode = settingsLocation.value.trim() || account.locationMode;
+
+    const ownerPost = appState.posts.find((post) => post.ownerId === account.id);
+    if (ownerPost) {
+      ownerPost.author = account.firstName;
+    }
+
+    syncProfileInputs(account);
+    updateAuthenticatedUI();
+    settingsOwnerNote.textContent = 'Settings saved. Only your account can use these controls.';
+  });
+}
+
 showStep(0);
+updateAvatarLetter();
+renderCategoryScreen(selectedGoal);
+updateAuthenticatedUI();

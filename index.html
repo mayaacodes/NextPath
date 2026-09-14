@@ -89,7 +89,6 @@
             <button class="choice-card">A job</button>
             <button class="choice-card">Resources</button>
             <button class="choice-card">Guidance</button>
-            <button class="choice-card">Something else</button>
           </div>
 
           <div class="nav-row">
@@ -101,22 +100,10 @@
         <section class="screen" data-step="4">
           <div class="card-header">
             <span class="eyebrow small">Step 3</span>
-            <h2 class="bubble">What are you going through?</h2>
+            <h2 class="bubble">Pick a category</h2>
           </div>
 
-          <div class="choice-grid category-grid">
-            <button class="choice-card active">Loss &amp; Grief</button>
-            <button class="choice-card">Home &amp; Family</button>
-            <button class="choice-card">Money &amp; Work</button>
-            <button class="choice-card">School</button>
-            <button class="choice-card">Mental Wellbeing</button>
-            <button class="choice-card">Physical Health</button>
-            <button class="choice-card">Relationships</button>
-            <button class="choice-card">Moving &amp; Change</button>
-            <button class="choice-card">Finding Community</button>
-            <button class="choice-card">Personal Growth</button>
-            <button class="choice-card">Something else</button>
-          </div>
+          <div class="choice-grid"></div>
 
           <div class="nav-row">
             <button class="ghost-btn prev-btn">Back</button>
@@ -126,9 +113,8 @@
 
         <section class="screen" data-step="5">
           <div class="card-header">
-            <span class="eyebrow small">Step 4 · Expand</span>
-            <h2 class="bubble">Expand your path</h2>
-            <p class="subtext">Choose a more specific option so we can guide you to the right support.</p>
+            <span class="eyebrow small">Step 4</span>
+            <h2 class="bubble">Pick a subcategory</h2>
           </div>
 
           <div class="choice-grid"></div>
@@ -147,9 +133,13 @@
 
           <div class="profile-layout">
             <div class="profile-side">
-              <div class="avatar-wrap">
-                <div class="avatar-circle">A</div>
+              <div class="avatar-section">
+                <div class="avatar-wrap">
+                  <div class="avatar-circle">A</div>
+                  <button id="cropAvatarBtn" class="crop-btn" aria-label="Crop avatar" title="Crop your avatar">✂️</button>
+                </div>
               </div>
+
               <label class="field-label">Choose an avatar color</label>
               <div class="avatar-colors" aria-label="Choose an avatar color">
                 <button type="button" class="avatar-color active" data-color="blue" aria-label="Blue"></button>
@@ -162,16 +152,9 @@
                 Upload your own picture
                 <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
               </label>
-              <div id="avatarCropControls" class="avatar-crop-controls hidden-field">
-                <label class="crop-label" for="avatarZoom">Zoom</label>
-                <input id="avatarZoom" type="range" min="100" max="220" value="125" />
-                <label class="crop-label" for="avatarX">Left / right</label>
-                <input id="avatarX" type="range" min="0" max="100" value="50" />
-                <label class="crop-label" for="avatarY">Up / down</label>
-                <input id="avatarY" type="range" min="0" max="100" value="50" />
-              </div>
-              <label class="field-label">First name</label>
-              <input type="text" placeholder="Type your name here" class="text-field" />
+
+              <label class="field-label" for="firstName">First name</label>
+              <input id="firstName" type="text" placeholder="Type your name here" class="text-field" required />
               <label class="field-label">School / College</label>
               <div class="school-search">
                 <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
@@ -232,20 +215,6 @@
             </div>
 
             <h3>Teen Support Circle</h3>
-            <p class="match-description">A starting point matched to what you shared.</p>
-            <ul>
-              <li>Age-separated community</li>
-              <li>Supportive group chats</li>
-              <li>Local meetups and resources</li>
-              <li>Private DMs to connect</li>
-            </ul>
-          </div>
-
-          <div class="action-grid"></div>
-
-          <div class="nav-row end">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn">Join Now</button>
           </div>
         </section>
       </main>

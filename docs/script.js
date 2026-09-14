@@ -557,7 +557,7 @@ function renderAccountPage() {
   });
   if (settingsProblem) {
     settingsProblem.disabled = !canUseSettings;
-    settingsProblem.readOnly = canUseSettings;
+    settingsProblem.readOnly = true;
   }
   if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;
 
@@ -947,6 +947,7 @@ if (saveSettingsButton) {
     account.email = settingsEmail.value.trim();
     account.school = settingsSchool.value.trim() || 'Not shared yet';
     account.locationMode = settingsLocation.value.trim() || account.locationMode;
+    upsertAccountPosts(account);
 
     const ownerPost = appState.posts.find((post) => post.ownerId === account.id);
     if (ownerPost) {

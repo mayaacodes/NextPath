@@ -206,33 +206,179 @@ document.querySelectorAll('.avatar-color').forEach((button) => {
   });
 });
 
+// Enhanced Avatar Cropper with Popup Modal
 const avatarUpload = document.getElementById('avatarUpload');
-const avatarCropControls = document.getElementById('avatarCropControls');
+const cropAvatarBtn = document.getElementById('cropAvatarBtn');
+const avatarCropperModal = document.getElementById('avatarCropperModal');
+const cropCanvas = document.getElementById('cropCanvas');
+const closeCropper = document.getElementById('closeCropper');
+const cancelCrop = document.getElementById('cancelCrop');
+const applyCrop = document.getElementById('applyCrop');
 const avatarZoom = document.getElementById('avatarZoom');
 const avatarX = document.getElementById('avatarX');
 const avatarY = document.getElementById('avatarY');
+const zoomValue = document.getElementById('zoomValue');
+const xValue = document.getElementById('xValue');
+const yValue = document.getElementById('yValue');
 const avatarPreview = avatarUpload ? avatarUpload.closest('.profile-side').querySelector('.avatar-circle') : null;
 
-function updateAvatarCrop() {
-  if (!avatarPreview || !avatarZoom || !avatarX || !avatarY) return;
-  avatarPreview.style.backgroundSize = `${avatarZoom.value}%`;
-  avatarPreview.style.backgroundPosition = `${avatarX.value}% ${avatarY.value}%`;
+let currentImageData = null;
+let canvasContext = null;
+
+function initializeCanvas(imageSrc) {
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.getElementById('cropCanvas');
+    const wrapper = canvas.parentElement;
+    
+    // Set canvas dimensions to match wrapper
+    canvas.width = wrapper.offsetWidth;
+    canvas.height = wrapper.offsetHeight;
+    
+    canvasContext = canvas.getContext('2d');
+    currentImageData = {
+      img: img,
+      originalWidth: img.width,
+      originalHeight: img.height
+    };
+    
+    drawCropPreview();
+  };
+  img.src = imageSrc;
 }
 
+function drawCropPreview() {
+  if (!canvasContext || !currentImageData) return;
+  
+  const canvas = document.getElementById('cropCanvas');
+  const zoom = parseInt(avatarZoom.value) / 100;
+  const offsetX = parseInt(avatarX.value);
+  const offsetY = parseInt(avatarY.value);
+  
+  // Calculate displayed dimensions
+  const displayWidth = currentImageData.originalWidth * zoom;
+  const displayHeight = currentImageData.originalHeight * zoom;
+  
+  // Calculate position based on offset
+  const x = (canvas.width - displayWidth) / 2 + (offsetX / 100) * (displayWidth - canvas.width);
+  const y = (canvas.height - displayHeight) / 2 + (offsetY / 100) * (displayHeight - canvas.height);
+  
+  // Clear canvas
+  canvasContext.fillStyle = '#f0f0f0';
+  canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw image
+  canvasContext.drawImage(currentImageData.img, x, y, displayWidth, displayHeight);
+}
+
+function updateCropControls() {
+  if (!avatarZoom || !avatarX || !avatarY) return;
+  
+  zoomValue.textContent = avatarZoom.value + '%';
+  xValue.textContent = avatarX.value + '%';
+  yValue.textContent = avatarY.value + '%';
+  
+  drawCropPreview();
+}
+
+function saveCropToPreview() {
+  if (!canvasContext || !currentImageData || !avatarPreview) return;
+  
+  const canvas = document.getElementById('cropCanvas');
+  const croppedImageData = canvas.toDataURL('image/png');
+  
+  avatarPreview.style.backgroundImage = `url("${croppedImageData}")`;
+  avatarPreview.classList.add('has-image');
+  avatarPreview.textContent = '';
+}
+
+function openCropper(imageSrc) {
+  if (!avatarCropperModal) return;
+  avatarCropperModal.classList.add('show');
+  
+  // Reset controls
+  avatarZoom.value = 100;
+  avatarX.value = 0;
+  avatarY.value = 0;
+  
+  if (imageSrc) {
+    initializeCanvas(imageSrc);
+  }
+}
+
+function closeCropperModal() {
+  if (!avatarCropperModal) return;
+  avatarCropperModal.classList.remove('show');
+  currentImageData = null;
+  canvasContext = null;
+}
+
+// Handle avatar upload
 if (avatarUpload) {
   avatarUpload.addEventListener('change', () => {
     const file = avatarUpload.files[0];
     if (!file) return;
-    avatarPreview.style.backgroundImage = `url("${URL.createObjectURL(file)}")`;
-    avatarPreview.classList.add('has-image');
-    avatarPreview.textContent = '';
-    avatarCropControls.classList.remove('hidden-field');
-    updateAvatarCrop();
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      openCropper(e.target.result);
+    };
+    reader.readAsDataURL(file);
   });
 }
 
-[avatarZoom, avatarX, avatarY].forEach((control) => {
-  if (control) control.addEventListener('input', updateAvatarCrop);
+// Handle crop button click
+if (cropAvatarBtn) {
+  cropAvatarBtn.addEventListener('click', () => {
+    if (avatarPreview && avatarPreview.style.backgroundImage) {
+      openCropper(avatarPreview.style.backgroundImage.slice(5, -2));
+    }
+  });
+}
+
+// Close cropper modal handlers
+if (closeCropper) {
+  closeCropper.addEventListener('click', closeCropperModal);
+}
+
+if (cancelCrop) {
+  cancelCrop.addEventListener('click', closeCropperModal);
+}
+
+if (applyCrop) {
+  applyCrop.addEventListener('click', () => {
+    saveCropToPreview();
+    closeCropperModal();
+  });
+}
+
+// Close modal when clicking on backdrop
+if (avatarCropperModal) {
+  avatarCropperModal.addEventListener('click', (e) => {
+    if (e.target === avatarCropperModal) {
+      closeCropperModal();
+    }
+  });
+}
+
+// Update crop preview on control changes
+if (avatarZoom) {
+  avatarZoom.addEventListener('input', updateCropControls);
+}
+
+if (avatarX) {
+  avatarX.addEventListener('input', updateCropControls);
+}
+
+if (avatarY) {
+  avatarY.addEventListener('input', updateCropControls);
+}
+
+// Handle canvas resizing on window resize
+window.addEventListener('resize', () => {
+  if (currentImageData && avatarCropperModal.classList.contains('show')) {
+    drawCropPreview();
+  }
 });
 
 const schoolSearch = document.getElementById('schoolSearch');

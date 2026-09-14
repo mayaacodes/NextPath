@@ -328,7 +328,15 @@ input[type="range"] {
   padding: 20px;
 }
 
+.avatar-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .avatar-wrap {
+  position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 18px;
@@ -368,6 +376,34 @@ input[type="range"] {
 .avatar-circle.has-image {
   background-color: var(--sky-300);
   background-repeat: no-repeat;
+}
+
+.crop-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-400), var(--sky-700));
+  border: 3px solid var(--white);
+  color: var(--white);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(44, 142, 217, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crop-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(44, 142, 217, 0.4);
+}
+
+.crop-btn:active {
+  transform: scale(0.95);
 }
 
 .avatar-colors {
@@ -413,7 +449,7 @@ input[type="range"] {
   display: none;
 }
 
-/* Enhanced Avatar Cropper Modal Styles */
+/* Enhanced Avatar Cropper Modal Popup */
 .avatar-cropper-modal {
   position: fixed;
   top: 0;

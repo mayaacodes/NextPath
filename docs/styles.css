@@ -351,6 +351,66 @@ h3 {
   margin-top: 26px;
 }
 
+.social-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.social-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.82);
+  color: var(--navy-900);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.social-link:hover,
+.social-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(44,142,217,0.45);
+  box-shadow: 0 10px 18px rgba(87,184,241,0.14);
+}
+
+.social-link:focus-visible {
+  outline: 2px solid rgba(44,142,217,0.45);
+  outline-offset: 2px;
+}
+
+.social-link svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.social-link .social-icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
 .primary-btn,
 .ghost-btn,
 .toggle-btn,

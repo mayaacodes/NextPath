@@ -438,7 +438,7 @@ function getCommunityMatches(account) {
     .map((community) => {
       const sharedInterests = community.interests.filter((interest) => account.interests.includes(interest));
       const problemMatches = community.problems.includes(account.category) || community.problems.includes(account.subcategory);
-      if (!problemMatches) return null;
+      if (!problemMatches || sharedInterests.length === 0) return null;
 
       return {
         ...community,
@@ -494,14 +494,16 @@ function renderAccountPage() {
   const account = appState.currentAccount;
   const canUseSettings = Boolean(account && canManageOwnerContent(account.id));
   const editableInputs = [settingsName, settingsEmail, settingsSchool, settingsLocation];
+  const allSettingsFields = [settingsName, settingsEmail, settingsProblem, settingsSchool, settingsLocation];
 
   if (!account) {
     if (accountContext) accountContext.textContent = 'Finish onboarding to see your account controls, settings, and posts.';
     if (settingsOwnerNote) settingsOwnerNote.textContent = 'Only the account owner can use these settings.';
-    [settingsName, settingsEmail, settingsProblem, settingsSchool, settingsLocation].forEach((field) => {
+    allSettingsFields.forEach((field) => {
       if (field) {
         field.value = '';
         field.disabled = true;
+        field.readOnly = false;
       }
     });
     if (saveSettingsButton) saveSettingsButton.disabled = true;
@@ -522,15 +524,23 @@ function renderAccountPage() {
   if (settingsEmail) settingsEmail.value = account.email;
   if (settingsProblem) {
     settingsProblem.value = getProblemLabel(account);
-    settingsProblem.disabled = false;
-    settingsProblem.readOnly = true;
   }
   if (settingsSchool) settingsSchool.value = account.school;
   if (settingsLocation) settingsLocation.value = account.locationMode;
 
+  allSettingsFields.forEach((field) => {
+    if (field) {
+      field.disabled = false;
+      field.readOnly = false;
+    }
+  });
   editableInputs.forEach((field) => {
     if (field) field.disabled = !canUseSettings;
   });
+  if (settingsProblem) {
+    settingsProblem.disabled = false;
+    settingsProblem.readOnly = true;
+  }
   if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;
 
   renderAccountPosts();
@@ -792,6 +802,10 @@ if (avatarY) {
 
 window.addEventListener('resize', () => {
   if (currentImageData && avatarCropperModal?.classList.contains('show')) {
+    if (cropCanvas?.parentElement) {
+      cropCanvas.width = cropCanvas.parentElement.offsetWidth;
+      cropCanvas.height = cropCanvas.parentElement.offsetHeight;
+    }
     drawCropPreview();
   }
 });

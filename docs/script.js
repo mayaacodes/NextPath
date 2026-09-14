@@ -231,8 +231,18 @@ function rememberAccount(account) {
 
   const nextEntry = {
     id: account.id,
+    age: Number(account.age || ageRange?.value || 15),
     firstName: account.firstName,
     email,
+    school: account.school || 'Not shared yet',
+    bio: account.bio || '',
+    locationMode: account.locationMode || 'Global + Local',
+    interests: Array.isArray(account.interests) && account.interests.length ? account.interests : ['Music'],
+    goal: account.goal || 'A community',
+    category: account.category || 'Loss & Grief',
+    subcategory: account.subcategory || '',
+    avatarColor: account.avatarColor || 'blue',
+    avatarImageData: sanitizeAvatarImageData(account.avatarImageData),
     savedAt: Date.now()
   };
 
@@ -644,6 +654,24 @@ function syncProfileInputs(account) {
   updateAvatarLetter();
 }
 
+function populateSettingsCategoryOptions(goalValue, selectedValue) {
+  if (!settingsCategory) return;
+  const categories = pathwayMap[goalValue]?.categories || pathwayMap['A community'].categories;
+  settingsCategory.innerHTML = categories
+    .map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`)
+    .join('');
+  settingsCategory.value = categories.includes(selectedValue) ? selectedValue : categories[0];
+}
+
+function populateSettingsSubcategoryOptions(categoryValue, selectedValue) {
+  if (!settingsSubcategory) return;
+  const options = subcategoryMap[categoryValue] || [];
+  settingsSubcategory.innerHTML = ['<option value="">No expanded focus</option>']
+    .concat(options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`))
+    .join('');
+  settingsSubcategory.value = options.includes(selectedValue) ? selectedValue : '';
+}
+
 function renderAccountPage() {
   const account = appState.currentAccount;
   const canUseSettings = Boolean(account && canManageOwnerContent(account.id));
@@ -688,9 +716,9 @@ function renderAccountPage() {
   if (settingsName) settingsName.value = account.firstName;
   if (settingsEmail) settingsEmail.value = account.email;
   if (settingsAge) settingsAge.value = Number.isFinite(Number(account.age)) ? String(account.age) : '';
-  if (settingsGoal) settingsGoal.value = account.goal || '';
-  if (settingsCategory) settingsCategory.value = account.category || '';
-  if (settingsSubcategory) settingsSubcategory.value = account.subcategory || '';
+  if (settingsGoal) settingsGoal.value = pathwayMap[account.goal] ? account.goal : 'A community';
+  populateSettingsCategoryOptions(settingsGoal?.value || 'A community', account.category || '');
+  populateSettingsSubcategoryOptions(settingsCategory?.value || account.category || '', account.subcategory || '');
   if (settingsSchool) settingsSchool.value = account.school;
   if (settingsLocation) settingsLocation.value = account.locationMode;
   if (settingsInterests) settingsInterests.value = account.interests.join(', ');
@@ -1123,6 +1151,19 @@ if (joinNowButton) {
   joinNowButton.addEventListener('click', () => navigateTo('people'));
 }
 
+if (settingsGoal) {
+  settingsGoal.addEventListener('change', () => {
+    populateSettingsCategoryOptions(settingsGoal.value, '');
+    populateSettingsSubcategoryOptions(settingsCategory?.value || '', '');
+  });
+}
+
+if (settingsCategory) {
+  settingsCategory.addEventListener('change', () => {
+    populateSettingsSubcategoryOptions(settingsCategory.value, '');
+  });
+}
+
 if (saveSettingsButton) {
   saveSettingsButton.addEventListener('click', () => {
     const account = appState.currentAccount;
@@ -1180,18 +1221,18 @@ if (returningLoginButton) {
 
     appState.currentAccount = {
       id: matchedAccount.id,
-      age: Number(ageRange?.value || 15),
+      age: Number(matchedAccount.age || ageRange?.value || 15),
       firstName: matchedAccount.firstName || 'Member',
       email: normalizeEmail(matchedAccount.email),
-      school: 'Not shared yet',
-      bio: '',
-      locationMode: 'Global + Local',
-      interests: ['Music'],
-      goal: 'A community',
-      category: 'Loss & Grief',
-      subcategory: '',
-      avatarColor: 'blue',
-      avatarImageData: ''
+      school: matchedAccount.school || 'Not shared yet',
+      bio: matchedAccount.bio || '',
+      locationMode: matchedAccount.locationMode || 'Global + Local',
+      interests: Array.isArray(matchedAccount.interests) && matchedAccount.interests.length ? matchedAccount.interests : ['Music'],
+      goal: matchedAccount.goal || 'A community',
+      category: matchedAccount.category || 'Loss & Grief',
+      subcategory: matchedAccount.subcategory || '',
+      avatarColor: matchedAccount.avatarColor || 'blue',
+      avatarImageData: sanitizeAvatarImageData(matchedAccount.avatarImageData)
     };
     appState.hasCreatedAccount = true;
     syncProfileInputs(appState.currentAccount);
@@ -1224,6 +1265,7 @@ if (resumeOnboardingButton) {
 
 appState.storedAccounts = loadStoredAccounts();
 appState.hasCreatedAccount = appState.storedAccounts.length > 0;
+updateReturningUserPanel();
 
 showStep(0);
 updateAvatarLetter();

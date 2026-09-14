@@ -259,7 +259,7 @@
 
         <!-- About Us Page -->
         <div id="about-page" class="page-content">
-          <section class="screen active">
+          <div class="page-card">
             <div class="card-header">
               <h1 class="bubble">About NextPath</h1>
             </div>
@@ -296,42 +296,38 @@
             <div class="nav-row">
               <button class="ghost-btn back-to-home-btn">Back to Home</button>
             </div>
-          </section>
+          </div>
         </div>
 
         <!-- Resources Page -->
         <div id="resources-page" class="page-content">
-          <section class="screen active">
+          <div class="page-card">
             <div class="card-header">
               <h1 class="bubble">Resources</h1>
             </div>
-            <div class="content-section">
-              <p class="subtext">Coming soon! Helpful resources and guides will be available here.</p>
-            </div>
+            <p class="subtext">Coming soon! Helpful resources and guides will be available here.</p>
             <div class="nav-row">
               <button class="ghost-btn back-to-home-btn">Back to Home</button>
             </div>
-          </section>
+          </div>
         </div>
 
         <!-- Contact Page -->
         <div id="contact-page" class="page-content">
-          <section class="screen active">
+          <div class="page-card">
             <div class="card-header">
               <h1 class="bubble">Contact</h1>
             </div>
-            <div class="content-section">
-              <div style="text-align: center; padding: 40px 20px;">
-                <p style="font-size: 1.2rem; color: #4a5f7f; margin-bottom: 20px;">Get in touch with NextPath</p>
-                <a href="mailto:nextpathproject@gmail.com" class="email-link" style="font-size: 1.3rem; display: inline-block; padding: 12px 24px;">
-                  nextpathproject@gmail.com
-                </a>
-              </div>
+            <div style="text-align: center; padding: 40px 20px;">
+              <p style="font-size: 1.2rem; color: #4a5f7f; margin-bottom: 20px;">Get in touch with NextPath</p>
+              <a href="mailto:nextpathproject@gmail.com" class="email-link" style="font-size: 1.3rem; display: inline-block; padding: 12px 24px;">
+                nextpathproject@gmail.com
+              </a>
             </div>
             <div class="nav-row">
               <button class="ghost-btn back-to-home-btn">Back to Home</button>
             </div>
-          </section>
+          </div>
         </div>
       </main>
     </div>
@@ -379,6 +375,14 @@
     </div>
 
     <style>
+      .page-card {
+        background: rgba(255,255,255,0.62);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 34px 30px 26px;
+        box-shadow: 0 18px 34px var(--shadow);
+      }
+
       .about-panel {
         grid-template-columns: 1fr 1fr;
       }

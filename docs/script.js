@@ -53,7 +53,7 @@ const signOutButton = document.getElementById('signOutButton');
 const resumeOnboardingButton = document.getElementById('resumeOnboardingButton');
 const loginStatus = document.getElementById('loginStatus');
 const loginForm = document.getElementById('loginForm');
-const loginAccountSelect = document.getElementById('loginAccountSelect');
+const loginAccountPicker = document.getElementById('loginAccountPicker');
 const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('loginPassword');
 const loginBackButton = document.getElementById('loginBackButton');
@@ -62,6 +62,7 @@ let currentStep = 0;
 let selectedGoal = 'A community';
 let selectedCategory = 'Loss & Grief';
 let selectedSubcategory = '';
+let selectedLoginAccountId = '';
 
 const appState = {
   currentAccount: null,
@@ -849,7 +850,7 @@ function updateReturningUserPanel() {
 
   if (loginStatus) {
     loginStatus.textContent = hasStoredAccounts
-      ? 'Choose a remembered account or enter the matching email and password to continue.'
+      ? 'Choose a saved account, or select Add account and enter the matching email and password.'
       : 'Create an account first if this is your first visit on this browser.';
   }
 
@@ -872,23 +873,48 @@ function updateReturningUserPanel() {
     }
   }
 
-  if (loginAccountSelect) {
-    const previousSelection = loginAccountSelect.value;
-    const options = hasStoredAccounts
-      ? ['<option value="">Choose an account</option>']
-        .concat(appState.storedAccounts.map((stored) => `
-          <option value="${escapeHtml(stored.id)}">${escapeHtml(stored.firstName || 'Member')} · ${escapeHtml(stored.email)}</option>
-        `))
-        .join('')
-      : '<option value="">No saved accounts yet</option>';
-    loginAccountSelect.innerHTML = options;
-    if (signedIn) {
-      loginAccountSelect.value = account.id;
-    } else if (hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === previousSelection)) {
-      loginAccountSelect.value = previousSelection;
-    } else {
-      loginAccountSelect.value = '';
+  if (loginAccountPicker) {
+    if (signedIn && hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === account.id)) {
+      selectedLoginAccountId = account.id;
+    } else if (!hasStoredAccounts || !appState.storedAccounts.some((stored) => stored.id === selectedLoginAccountId)) {
+      selectedLoginAccountId = '';
     }
+
+    const accountTiles = hasStoredAccounts
+      ? appState.storedAccounts.map((stored) => {
+        const isSelected = stored.id === selectedLoginAccountId;
+        const avatarImageData = sanitizeAvatarImageData(stored.avatarImageData);
+        const avatarClassName = `login-account-avatar ${stored.avatarColor || 'blue'}${avatarImageData ? ' has-image' : ''}`;
+        const avatarStyle = avatarImageData ? ` style="background-image: url('${escapeHtml(avatarImageData)}');"` : '';
+        return `
+          <button
+            type="button"
+            class="login-account-tile${isSelected ? ' is-selected' : ''}"
+            data-account-id="${escapeHtml(stored.id)}"
+            role="option"
+            aria-selected="${isSelected ? 'true' : 'false'}"
+            aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
+          >
+            <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
+            <span class="login-account-copy">
+              <strong>${escapeHtml(stored.firstName || 'Member')}</strong>
+              <span>${escapeHtml(normalizeEmail(stored.email))}</span>
+            </span>
+          </button>
+        `;
+      }).join('')
+      : '<p class="login-account-picker-empty">No saved accounts yet on this browser.</p>';
+
+    loginAccountPicker.innerHTML = `
+      ${accountTiles}
+      <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" role="option" aria-selected="false" aria-label="Add account and enter email manually">
+        <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
+        <span class="login-account-copy">
+          <strong>Add account</strong>
+          <span>Use a different email</span>
+        </span>
+      </button>
+    `;
   }
 
   if (returningLoginButton) returningLoginButton.disabled = !hasStoredAccounts;
@@ -1389,9 +1415,8 @@ if (returningLoginButton) {
       return;
     }
 
-    if (loginAccountSelect) {
-      loginAccountSelect.value = matchedAccount.id;
-    }
+    selectedLoginAccountId = matchedAccount.id;
+    updateReturningUserPanel();
     if (loginEmailInput) {
       loginEmailInput.value = normalizeEmail(matchedAccount.email);
     }
@@ -1403,12 +1428,30 @@ if (returningLoginButton) {
   });
 }
 
-if (loginAccountSelect) {
-  loginAccountSelect.addEventListener('change', () => {
-    const matchedAccount = appState.storedAccounts.find((account) => account.id === loginAccountSelect.value);
-    if (matchedAccount && loginEmailInput) {
-      loginEmailInput.value = normalizeEmail(matchedAccount.email);
+if (loginAccountPicker) {
+  loginAccountPicker.addEventListener('click', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile) return;
+
+    if (tile.dataset.addAccount === 'true') {
+      selectedLoginAccountId = '';
+      if (loginEmailInput) loginEmailInput.value = '';
+      if (loginPasswordInput) {
+        loginPasswordInput.value = '';
+        loginPasswordInput.setCustomValidity('');
+      }
+      updateReturningUserPanel();
+      if (loginEmailInput) loginEmailInput.focus();
+      return;
     }
+
+    const matchedAccount = appState.storedAccounts.find((account) => account.id === tile.dataset.accountId);
+    if (!matchedAccount) return;
+
+    selectedLoginAccountId = matchedAccount.id;
+    if (loginEmailInput) loginEmailInput.value = normalizeEmail(matchedAccount.email);
+    updateReturningUserPanel();
+    if (loginPasswordInput) loginPasswordInput.focus();
   });
 }
 

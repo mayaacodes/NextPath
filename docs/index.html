@@ -359,10 +359,8 @@
                 <p id="loginStatus" class="small-subtext">Create an account first if this is your first visit on this browser.</p>
               </div>
               <div class="returning-user-form">
-                <label class="field-label" for="loginAccountSelect">Remembered account</label>
-                <select id="loginAccountSelect" class="text-field">
-                  <option value="">Choose an account</option>
-                </select>
+                <p id="loginAccountPickerLabel" class="field-label">Saved accounts</p>
+                <div id="loginAccountPicker" class="login-account-picker" role="listbox" aria-labelledby="loginAccountPickerLabel"></div>
 
                 <label class="field-label" for="loginEmail">Email</label>
                 <input id="loginEmail" type="email" class="text-field" autocomplete="email" placeholder="Type your email here" required />

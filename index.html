@@ -366,10 +366,31 @@
               <p id="accountContext" class="subtext">Finish onboarding to see your account controls, settings, and posts.</p>
             </div>
 
+            <section id="returningUserPanel" class="returning-user-panel">
+              <div>
+                <h3>Returning user</h3>
+                <p id="returningUserStatus" class="small-subtext">Create an account to unlock sign-in for later visits on this browser.</p>
+              </div>
+              <div class="returning-user-form">
+                <label class="field-label" for="returningAccountSelect">Saved account</label>
+                <select id="returningAccountSelect" class="text-field">
+                  <option value="">No saved accounts yet</option>
+                </select>
+                <div class="returning-user-actions">
+                  <button id="returningLoginButton" class="primary-btn" type="button">Sign in</button>
+                  <button id="signOutButton" class="ghost-btn" type="button" disabled>Sign out</button>
+                </div>
+                <button id="resumeOnboardingButton" class="ghost-btn full-width-btn" type="button" disabled>Edit full signup details</button>
+              </div>
+            </section>
+
             <div class="account-page-grid">
               <section class="profile-side">
                 <h3>Settings</h3>
                 <p id="settingsOwnerNote" class="owner-note">Only the account owner can use these settings.</p>
+
+                <label class="field-label" for="settingsAge">Age</label>
+                <input id="settingsAge" type="number" min="7" max="100" class="text-field" disabled />
 
                 <label class="field-label" for="settingsName">First name</label>
                 <input id="settingsName" type="text" class="text-field" disabled />
@@ -377,14 +398,37 @@
                 <label class="field-label" for="settingsEmail">Email</label>
                 <input id="settingsEmail" type="email" class="text-field" disabled />
 
-                <label class="field-label" for="settingsProblem">Community focus</label>
-                <input id="settingsProblem" type="text" class="text-field" disabled />
+                <label class="field-label" for="settingsGoal">Main goal</label>
+                <select id="settingsGoal" class="text-field" disabled>
+                  <option value="A community">A community</option>
+                  <option value="Support programs">Support programs</option>
+                  <option value="A job">A job</option>
+                  <option value="Resources">Resources</option>
+                  <option value="Guidance">Guidance</option>
+                  <option value="Something else">Something else</option>
+                </select>
+
+                <label class="field-label" for="settingsCategory">Community focus</label>
+                <select id="settingsCategory" class="text-field" disabled>
+                  <option value="Loss &amp; Grief">Loss &amp; Grief</option>
+                </select>
+
+                <label class="field-label" for="settingsSubcategory">Expanded focus</label>
+                <select id="settingsSubcategory" class="text-field" disabled>
+                  <option value="">No expanded focus</option>
+                </select>
 
                 <label class="field-label" for="settingsSchool">School / College</label>
                 <input id="settingsSchool" type="text" class="text-field" disabled />
 
                 <label class="field-label" for="settingsLocation">Local or global</label>
                 <input id="settingsLocation" type="text" class="text-field" disabled />
+
+                <label class="field-label" for="settingsInterests">Interests (comma separated)</label>
+                <input id="settingsInterests" type="text" class="text-field" disabled />
+
+                <label class="field-label" for="settingsBio">Bio</label>
+                <textarea id="settingsBio" class="text-field area" disabled></textarea>
 
                 <button id="saveSettingsButton" class="primary-btn account-save-btn" type="button" disabled>Save settings</button>
               </section>

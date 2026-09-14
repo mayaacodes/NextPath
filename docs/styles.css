@@ -84,6 +84,31 @@ button {
   letter-spacing: 0.04em;
 }
 
+.nav-menu {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--navy-900);
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+
+.nav-link:hover {
+  color: var(--sky-700);
+}
+
+.nav-link.active {
+  color: var(--sky-700);
+  border-bottom-color: var(--sky-700);
+}
+
 .step-indicator {
   display: flex;
   gap: 8px;
@@ -113,6 +138,14 @@ button {
   min-height: 620px;
 }
 
+.page-content {
+  display: none;
+}
+
+.page-content.active {
+  display: block;
+}
+
 .screen {
   display: none;
   background: rgba(255,255,255,0.62);
@@ -124,6 +157,28 @@ button {
 
 .screen.active {
   display: block;
+}
+
+.content-section {
+  background: rgba(255,255,255,0.62);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 34px 30px 26px;
+  box-shadow: 0 18px 34px var(--shadow);
+}
+
+.about-content {
+  max-width: 700px;
+}
+
+.email-link {
+  color: var(--sky-700);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.email-link:hover {
+  text-decoration: underline;
 }
 
 .eyebrow {
@@ -842,6 +897,11 @@ input[type="range"] {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .nav-menu {
+    width: 100%;
+    flex-wrap: wrap;
   }
 
   .screen {

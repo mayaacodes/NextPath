@@ -520,8 +520,8 @@ function renderAccountPage() {
     allSettingsFields.forEach((field) => {
       if (field) {
         field.value = '';
-        field.disabled = true;
-        field.readOnly = false;
+        field.disabled = false;
+        field.readOnly = true;
       }
     });
     if (saveSettingsButton) saveSettingsButton.disabled = true;
@@ -553,10 +553,9 @@ function renderAccountPage() {
     }
   });
   editableInputs.forEach((field) => {
-    if (field) field.disabled = !canUseSettings;
+    if (field) field.readOnly = !canUseSettings;
   });
   if (settingsProblem) {
-    settingsProblem.disabled = !canUseSettings;
     settingsProblem.readOnly = true;
   }
   if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;

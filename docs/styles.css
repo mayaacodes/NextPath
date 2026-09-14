@@ -396,6 +396,19 @@ h3 {
   line-height: 1.4;
 }
 
+.info-copy {
+  margin: 0;
+  color: #4a5f7f;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.section-title {
+  margin: 0 0 1em;
+  color: #1a3a5c;
+  font-size: 1.1rem;
+}
+
 .age-box {
   max-width: 640px;
   margin-top: 28px;
@@ -926,6 +939,23 @@ input[type="range"] {
 
 .placeholder-note {
   margin: 18px 4px 0;
+}
+
+.contact-panel {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.contact-intro {
+  margin: 0 0 20px;
+  color: #4a5f7f;
+  font-size: 1.2rem;
+}
+
+.contact-link {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 1.3rem;
 }
 
 .interest-tags {

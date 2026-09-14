@@ -179,6 +179,41 @@ function showStep(stepIndex) {
   stepPills.forEach((pill, index) => pill.classList.toggle('active', index === currentStep));
 }
 
+// Navigation for pages
+function navigateTo(page) {
+  const pages = document.querySelectorAll('.page-content');
+  const navLinks = document.querySelectorAll('.nav-link');
+  
+  pages.forEach(p => p.classList.remove('active'));
+  navLinks.forEach(link => link.classList.remove('active'));
+  
+  const targetPage = document.getElementById(`${page}-page`);
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+  
+  const activeLink = document.querySelector(`[data-page="${page}"]`);
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+}
+
+// Add click handlers for navigation links
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const page = link.getAttribute('data-page');
+    navigateTo(page);
+  });
+});
+
+// Add click handlers for back to home buttons
+document.querySelectorAll('.back-to-home-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigateTo('home');
+  });
+});
+
 document.querySelectorAll('.choice-grid').forEach((grid) => {
   grid.querySelectorAll('.choice-card').forEach((card) => {
     card.addEventListener('click', () => setChoiceState(grid, card.textContent.trim()));

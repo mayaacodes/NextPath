@@ -147,9 +147,13 @@
 
           <div class="profile-layout">
             <div class="profile-side">
-              <div class="avatar-wrap">
-                <div class="avatar-circle">A</div>
+              <div class="avatar-section">
+                <div class="avatar-wrap">
+                  <div class="avatar-circle">A</div>
+                  <button id="cropAvatarBtn" class="crop-btn" aria-label="Crop avatar" title="Crop your avatar">✂️</button>
+                </div>
               </div>
+              
               <label class="field-label">Choose an avatar color</label>
               <div class="avatar-colors" aria-label="Choose an avatar color">
                 <button type="button" class="avatar-color active" data-color="blue" aria-label="Blue"></button>
@@ -162,48 +166,6 @@
                 Upload your own picture
                 <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
               </label>
-              
-              <!-- Enhanced Avatar Cropper Modal -->
-              <div id="avatarCropperModal" class="avatar-cropper-modal hidden-field">
-                <div class="cropper-container">
-                  <div class="cropper-header">
-                    <h3>Crop Your Avatar</h3>
-                    <button id="closeCropper" class="close-btn" aria-label="Close cropper">×</button>
-                  </div>
-                  
-                  <div class="cropper-content">
-                    <div class="crop-canvas-wrapper">
-                      <canvas id="cropCanvas"></canvas>
-                      <div class="crop-overlay"></div>
-                    </div>
-                    
-                    <div class="crop-controls-section">
-                      <div class="control-group">
-                        <label class="crop-label" for="avatarZoom">Zoom</label>
-                        <input id="avatarZoom" type="range" min="50" max="300" value="100" step="5" />
-                        <span class="control-value" id="zoomValue">100%</span>
-                      </div>
-                      
-                      <div class="control-group">
-                        <label class="crop-label" for="avatarX">Left / Right</label>
-                        <input id="avatarX" type="range" min="-100" max="100" value="0" step="5" />
-                        <span class="control-value" id="xValue">0%</span>
-                      </div>
-                      
-                      <div class="control-group">
-                        <label class="crop-label" for="avatarY">Up / Down</label>
-                        <input id="avatarY" type="range" min="-100" max="100" value="0" step="5" />
-                        <span class="control-value" id="yValue">0%</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="cropper-actions">
-                    <button id="cancelCrop" class="ghost-btn">Cancel</button>
-                    <button id="applyCrop" class="primary-btn">Apply Crop</button>
-                  </div>
-                </div>
-              </div>
               
               <label class="field-label">First name</label>
               <input type="text" placeholder="Type your name here" class="text-field" />
@@ -284,6 +246,48 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <!-- Enhanced Avatar Cropper Modal Popup -->
+    <div id="avatarCropperModal" class="avatar-cropper-modal hidden-field">
+      <div class="cropper-container">
+        <div class="cropper-header">
+          <h3>Crop Your Avatar</h3>
+          <button id="closeCropper" class="close-btn" aria-label="Close cropper">×</button>
+        </div>
+        
+        <div class="cropper-content">
+          <div class="crop-canvas-wrapper">
+            <canvas id="cropCanvas"></canvas>
+            <div class="crop-overlay"></div>
+          </div>
+          
+          <div class="crop-controls-section">
+            <div class="control-group">
+              <label class="crop-label" for="avatarZoom">Zoom</label>
+              <input id="avatarZoom" type="range" min="50" max="300" value="100" step="5" />
+              <span class="control-value" id="zoomValue">100%</span>
+            </div>
+            
+            <div class="control-group">
+              <label class="crop-label" for="avatarX">Left / Right</label>
+              <input id="avatarX" type="range" min="-100" max="100" value="0" step="5" />
+              <span class="control-value" id="xValue">0%</span>
+            </div>
+            
+            <div class="control-group">
+              <label class="crop-label" for="avatarY">Up / Down</label>
+              <input id="avatarY" type="range" min="-100" max="100" value="0" step="5" />
+              <span class="control-value" id="yValue">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="cropper-actions">
+          <button id="cancelCrop" class="ghost-btn">Cancel</button>
+          <button id="applyCrop" class="primary-btn">Apply Crop</button>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>

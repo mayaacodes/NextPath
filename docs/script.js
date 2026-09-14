@@ -206,8 +206,9 @@ document.querySelectorAll('.avatar-color').forEach((button) => {
   });
 });
 
-// Enhanced Avatar Cropper Implementation
+// Enhanced Avatar Cropper with Popup Modal
 const avatarUpload = document.getElementById('avatarUpload');
+const cropAvatarBtn = document.getElementById('cropAvatarBtn');
 const avatarCropperModal = document.getElementById('avatarCropperModal');
 const cropCanvas = document.getElementById('cropCanvas');
 const closeCropper = document.getElementById('closeCropper');
@@ -291,7 +292,7 @@ function saveCropToPreview() {
   avatarPreview.textContent = '';
 }
 
-function openCropper() {
+function openCropper(imageSrc) {
   if (!avatarCropperModal) return;
   avatarCropperModal.classList.add('show');
   
@@ -299,7 +300,10 @@ function openCropper() {
   avatarZoom.value = 100;
   avatarX.value = 0;
   avatarY.value = 0;
-  updateCropControls();
+  
+  if (imageSrc) {
+    initializeCanvas(imageSrc);
+  }
 }
 
 function closeCropperModal() {
@@ -309,6 +313,7 @@ function closeCropperModal() {
   canvasContext = null;
 }
 
+// Handle avatar upload
 if (avatarUpload) {
   avatarUpload.addEventListener('change', () => {
     const file = avatarUpload.files[0];
@@ -316,13 +321,22 @@ if (avatarUpload) {
     
     const reader = new FileReader();
     reader.onload = function(e) {
-      initializeCanvas(e.target.result);
-      openCropper();
+      openCropper(e.target.result);
     };
     reader.readAsDataURL(file);
   });
 }
 
+// Handle crop button click
+if (cropAvatarBtn) {
+  cropAvatarBtn.addEventListener('click', () => {
+    if (avatarPreview && avatarPreview.style.backgroundImage) {
+      openCropper(avatarPreview.style.backgroundImage.slice(5, -2));
+    }
+  });
+}
+
+// Close cropper modal handlers
 if (closeCropper) {
   closeCropper.addEventListener('click', closeCropperModal);
 }
@@ -338,6 +352,7 @@ if (applyCrop) {
   });
 }
 
+// Close modal when clicking on backdrop
 if (avatarCropperModal) {
   avatarCropperModal.addEventListener('click', (e) => {
     if (e.target === avatarCropperModal) {
@@ -346,6 +361,7 @@ if (avatarCropperModal) {
   });
 }
 
+// Update crop preview on control changes
 if (avatarZoom) {
   avatarZoom.addEventListener('input', updateCropControls);
 }

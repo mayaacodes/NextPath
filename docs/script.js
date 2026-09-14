@@ -228,10 +228,23 @@ function saveStoredAccounts() {
 function rememberAccount(account) {
   const email = normalizeEmail(account?.email);
   if (!email) return;
+  const accountPosts = appState.posts
+    .filter((post) => post.ownerId === account.id)
+    .map((post) => ({
+      id: post.id,
+      ownerId: post.ownerId,
+      author: post.author,
+      title: post.title,
+      problem: post.problem,
+      body: post.body,
+      editable: Boolean(post.editable),
+      userEdited: Boolean(post.userEdited)
+    }));
 
   const nextEntry = {
     ...account,
     email,
+    savedPosts: accountPosts,
     savedAt: Date.now()
   };
 
@@ -519,6 +532,9 @@ function renderAccountPosts() {
 
       post.body = nextBody;
       post.userEdited = true;
+      if (appState.currentAccount) {
+        rememberAccount(appState.currentAccount);
+      }
       renderAccountPosts();
     });
   });
@@ -694,12 +710,9 @@ function renderAccountPage() {
 
   allSettingsFields.forEach((field) => {
     if (field) {
-      field.disabled = false;
+      field.disabled = !canUseSettings;
       field.readOnly = false;
     }
-  });
-  editableInputs.forEach((field) => {
-    if (field) field.readOnly = !canUseSettings;
   });
   if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;
 
@@ -723,6 +736,8 @@ function updateReturningUserPanel() {
 
   if (returningEmail && signedIn) {
     returningEmail.value = account.email || '';
+  } else if (returningEmail) {
+    returningEmail.value = '';
   }
 
   if (signOutButton) signOutButton.disabled = !signedIn;
@@ -1168,6 +1183,13 @@ if (returningLoginButton) {
 
     appState.currentAccount = { ...matchedAccount };
     appState.hasCreatedAccount = true;
+    appState.posts = Array.isArray(matchedAccount.savedPosts)
+      ? matchedAccount.savedPosts.map((post) => ({
+          ...post,
+          ownerId: appState.currentAccount.id,
+          author: appState.currentAccount.firstName
+        }))
+      : [];
     syncProfileInputs(appState.currentAccount);
     upsertAccountPosts(appState.currentAccount);
     updateAuthenticatedUI();

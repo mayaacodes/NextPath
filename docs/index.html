@@ -14,6 +14,14 @@
           <div class="brand-mark">N</div>
           <span class="brand-name">NextPath</span>
         </div>
+        
+        <nav class="nav-menu">
+          <a href="#home" class="nav-link active" data-page="home">Home</a>
+          <a href="#about" class="nav-link" data-page="about">About Us</a>
+          <a href="#resources" class="nav-link" data-page="resources">Resources</a>
+          <a href="#contact" class="nav-link" data-page="contact">Contact</a>
+        </nav>
+        
         <div class="step-indicator">
           <span class="step-pill active">1</span>
           <span class="step-pill">2</span>
@@ -26,225 +34,273 @@
       </header>
 
       <main class="onboarding-app">
-        <section class="screen active" data-step="1">
-          <div class="intro-copy">
-            <p class="eyebrow">You are not alone</p>
-            <h1 class="bubble">Welcome to NextPath</h1>
-            <p class="subtext">
-              We help you find a supportive community based on your age, your
-              situation, and the kind of guidance you need.
-            </p>
+        <!-- Home Page (Main Onboarding) -->
+        <div id="home-page" class="page-content active">
+          <section class="screen active" data-step="1">
+            <div class="intro-copy">
+              <p class="eyebrow">You are not alone</p>
+              <h1 class="bubble">Welcome to NextPath</h1>
+              <p class="subtext">
+                We help you find a supportive community based on your age, your
+                situation, and the kind of guidance you need.
+              </p>
 
-            <div class="cta-row">
-              <button class="primary-btn next-btn">Get started</button>
+              <div class="cta-row">
+                <button class="primary-btn next-btn">Get started</button>
+              </div>
             </div>
-          </div>
 
-          <div class="info-panel">
-            <div class="mini-card">
-              <span class="mini-label">Age-based matching</span>
-              <strong>Teen / young adult / adult</strong>
+            <div class="info-panel">
+              <div class="mini-card">
+                <span class="mini-label">Age-based matching</span>
+                <strong>Teen / young adult / adult</strong>
+              </div>
+              <div class="mini-card">
+                <span class="mini-label">Community types</span>
+                <strong>Global + local</strong>
+              </div>
+              <div class="mini-card">
+                <span class="mini-label">Support</span>
+                <strong>Groups, DMs, and resources</strong>
+              </div>
             </div>
-            <div class="mini-card">
-              <span class="mini-label">Community types</span>
-              <strong>Global + local</strong>
+          </section>
+
+          <section class="screen" data-step="2">
+            <div class="card-header">
+              <span class="eyebrow small">Step 1</span>
+              <h2 class="bubble">How old are you?</h2>
             </div>
-            <div class="mini-card">
-              <span class="mini-label">Support</span>
-              <strong>Groups, DMs, and resources</strong>
+
+            <div class="age-box">
+              <div class="age-readout">
+                <span id="ageValue">15</span>
+              </div>
+              <input id="ageRange" type="range" min="7" max="100" value="15" />
+              <div id="ageNote" class="age-note">You will be placed within ages 13-18</div>
+              <div id="ageTag" class="age-tag">Teen support circle</div>
             </div>
-          </div>
-        </section>
 
-        <section class="screen" data-step="2">
-          <div class="card-header">
-            <span class="eyebrow small">Step 1</span>
-            <h2 class="bubble">How old are you?</h2>
-          </div>
-
-          <div class="age-box">
-            <div class="age-readout">
-              <span id="ageValue">15</span>
+            <div class="nav-row">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn next-btn">Next</button>
             </div>
-            <input id="ageRange" type="range" min="7" max="100" value="15" />
-            <div id="ageNote" class="age-note">You will be placed within ages 13-18</div>
-            <div id="ageTag" class="age-tag">Teen support circle</div>
-          </div>
+          </section>
 
-          <div class="nav-row">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn next-btn">Next</button>
-          </div>
-        </section>
+          <section class="screen" data-step="3">
+            <div class="card-header">
+              <span class="eyebrow small">Step 2</span>
+              <h2 class="bubble">What are you mainly looking for?</h2>
+            </div>
 
-        <section class="screen" data-step="3">
-          <div class="card-header">
-            <span class="eyebrow small">Step 2</span>
-            <h2 class="bubble">What are you mainly looking for?</h2>
-          </div>
+            <div class="choice-grid">
+              <button class="choice-card active">A community</button>
+              <button class="choice-card">Support programs</button>
+              <button class="choice-card">A job</button>
+              <button class="choice-card">Resources</button>
+              <button class="choice-card">Guidance</button>
+              <button class="choice-card">Something else</button>
+            </div>
 
-          <div class="choice-grid">
-            <button class="choice-card active">A community</button>
-            <button class="choice-card">Support programs</button>
-            <button class="choice-card">A job</button>
-            <button class="choice-card">Resources</button>
-            <button class="choice-card">Guidance</button>
-            <button class="choice-card">Something else</button>
-          </div>
+            <div class="nav-row">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn next-btn">Next</button>
+            </div>
+          </section>
 
-          <div class="nav-row">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn next-btn">Next</button>
-          </div>
-        </section>
+          <section class="screen" data-step="4">
+            <div class="card-header">
+              <span class="eyebrow small">Step 3</span>
+              <h2 class="bubble">What are you going through?</h2>
+            </div>
 
-        <section class="screen" data-step="4">
-          <div class="card-header">
-            <span class="eyebrow small">Step 3</span>
-            <h2 class="bubble">What are you going through?</h2>
-          </div>
+            <div class="choice-grid category-grid">
+              <button class="choice-card active">Loss &amp; Grief</button>
+              <button class="choice-card">Home &amp; Family</button>
+              <button class="choice-card">Money &amp; Work</button>
+              <button class="choice-card">School</button>
+              <button class="choice-card">Mental Wellbeing</button>
+              <button class="choice-card">Physical Health</button>
+              <button class="choice-card">Relationships</button>
+              <button class="choice-card">Moving &amp; Change</button>
+              <button class="choice-card">Finding Community</button>
+              <button class="choice-card">Personal Growth</button>
+              <button class="choice-card">Something else</button>
+            </div>
 
-          <div class="choice-grid category-grid">
-            <button class="choice-card active">Loss &amp; Grief</button>
-            <button class="choice-card">Home &amp; Family</button>
-            <button class="choice-card">Money &amp; Work</button>
-            <button class="choice-card">School</button>
-            <button class="choice-card">Mental Wellbeing</button>
-            <button class="choice-card">Physical Health</button>
-            <button class="choice-card">Relationships</button>
-            <button class="choice-card">Moving &amp; Change</button>
-            <button class="choice-card">Finding Community</button>
-            <button class="choice-card">Personal Growth</button>
-            <button class="choice-card">Something else</button>
-          </div>
+            <div class="nav-row">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn next-btn">Next</button>
+            </div>
+          </section>
 
-          <div class="nav-row">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn next-btn">Next</button>
-          </div>
-        </section>
+          <section class="screen" data-step="5">
+            <div class="card-header">
+              <span class="eyebrow small">Step 4 · Expand</span>
+              <h2 class="bubble">Expand your path</h2>
+              <p class="subtext">Choose a more specific option so we can guide you to the right support.</p>
+            </div>
 
-        <section class="screen" data-step="5">
-          <div class="card-header">
-            <span class="eyebrow small">Step 4 · Expand</span>
-            <h2 class="bubble">Expand your path</h2>
-            <p class="subtext">Choose a more specific option so we can guide you to the right support.</p>
-          </div>
+            <div class="choice-grid"></div>
 
-          <div class="choice-grid"></div>
+            <div class="nav-row">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn next-btn">Next</button>
+            </div>
+          </section>
 
-          <div class="nav-row">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn next-btn">Next</button>
-          </div>
-        </section>
+          <section class="screen" data-step="6">
+            <div class="card-header">
+              <span class="eyebrow small">Step 5</span>
+              <h2 class="bubble">Build your profile</h2>
+            </div>
 
-        <section class="screen" data-step="6">
-          <div class="card-header">
-            <span class="eyebrow small">Step 5</span>
-            <h2 class="bubble">Build your profile</h2>
-          </div>
+            <div class="profile-layout">
+              <div class="profile-side">
+                <div class="avatar-section">
+                  <div class="avatar-wrap">
+                    <div class="avatar-circle">A</div>
+                    <button id="cropAvatarBtn" class="crop-btn" aria-label="Crop avatar" title="Crop your avatar">✂️</button>
+                  </div>
+                </div>
+                
+                <label class="field-label">Choose an avatar color</label>
+                <div class="avatar-colors" aria-label="Choose an avatar color">
+                  <button type="button" class="avatar-color active" data-color="blue" aria-label="Blue"></button>
+                  <button type="button" class="avatar-color pink" data-color="pink" aria-label="Pink"></button>
+                  <button type="button" class="avatar-color purple" data-color="purple" aria-label="Purple"></button>
+                  <button type="button" class="avatar-color green" data-color="green" aria-label="Green"></button>
+                  <button type="button" class="avatar-color gold" data-color="gold" aria-label="Gold"></button>
+                </div>
+                <label class="upload-btn">
+                  Upload your own picture
+                  <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
+                </label>
+                
+                <label class="field-label">First name</label>
+                <input type="text" placeholder="Type your name here" class="text-field" />
+                <label class="field-label">School / College</label>
+                <div class="school-search">
+                  <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
+                  <div id="schoolSuggestions" class="school-suggestions" role="listbox"></div>
+                </div>
+                <div id="schoolAbbreviation" class="school-abbreviation">Your school initials will appear here</div>
+                <button id="noSchoolButton" type="button" class="small-link">I do not go to school</button>
+                <input id="otherSchool" type="text" class="text-field hidden-field" placeholder="Type your school name here" aria-label="Type your school name" />
+              </div>
 
-          <div class="profile-layout">
-            <div class="profile-side">
-              <div class="avatar-section">
-                <div class="avatar-wrap">
-                  <div class="avatar-circle">A</div>
-                  <button id="cropAvatarBtn" class="crop-btn" aria-label="Crop avatar" title="Crop your avatar">✂️</button>
+              <div class="profile-side details">
+                <label class="field-label">Interests</label>
+                <div class="interest-tags" aria-label="Choose your interests">
+                  <span class="active">Music</span>
+                  <span>Art</span>
+                  <span>Wellbeing</span>
+                  <span>Friends</span>
+                  <span>Gaming</span>
+                  <span>Sports</span>
+                  <span>Reading</span>
+                  <span>Writing</span>
+                  <span>Nature</span>
+                  <span>Cooking</span>
+                  <span>Animals</span>
+                  <span>Technology</span>
+                  <span>Volunteering</span>
+                  <span>Faith &amp; spirituality</span>
+                  <span>Creative projects</span>
+                </div>
+
+                <label class="field-label">Bio</label>
+                <textarea class="text-field area">Looking for peer support, encouragement, and a safe place to feel understood.</textarea>
+
+                <label class="field-label">Local or global?</label>
+                <div class="toggle-row">
+                  <button class="toggle-btn active">Global + Local</button>
+                  <button class="toggle-btn">Global only</button>
                 </div>
               </div>
-              
-              <label class="field-label">Choose an avatar color</label>
-              <div class="avatar-colors" aria-label="Choose an avatar color">
-                <button type="button" class="avatar-color active" data-color="blue" aria-label="Blue"></button>
-                <button type="button" class="avatar-color pink" data-color="pink" aria-label="Pink"></button>
-                <button type="button" class="avatar-color purple" data-color="purple" aria-label="Purple"></button>
-                <button type="button" class="avatar-color green" data-color="green" aria-label="Green"></button>
-                <button type="button" class="avatar-color gold" data-color="gold" aria-label="Gold"></button>
-              </div>
-              <label class="upload-btn">
-                Upload your own picture
-                <input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp" />
-              </label>
-              
-              <label class="field-label">First name</label>
-              <input type="text" placeholder="Type your name here" class="text-field" />
-              <label class="field-label">School / College</label>
-              <div class="school-search">
-                <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
-                <div id="schoolSuggestions" class="school-suggestions" role="listbox"></div>
-              </div>
-              <div id="schoolAbbreviation" class="school-abbreviation">Your school initials will appear here</div>
-              <button id="noSchoolButton" type="button" class="small-link">I do not go to school</button>
-              <input id="otherSchool" type="text" class="text-field hidden-field" placeholder="Type your school name here" aria-label="Type your school name" />
             </div>
 
-            <div class="profile-side details">
-              <label class="field-label">Interests</label>
-              <div class="interest-tags" aria-label="Choose your interests">
-                <span class="active">Music</span>
-                <span>Art</span>
-                <span>Wellbeing</span>
-                <span>Friends</span>
-                <span>Gaming</span>
-                <span>Sports</span>
-                <span>Reading</span>
-                <span>Writing</span>
-                <span>Nature</span>
-                <span>Cooking</span>
-                <span>Animals</span>
-                <span>Technology</span>
-                <span>Volunteering</span>
-                <span>Faith &amp; spirituality</span>
-                <span>Creative projects</span>
-              </div>
-
-              <label class="field-label">Bio</label>
-              <textarea class="text-field area">Looking for peer support, encouragement, and a safe place to feel understood.</textarea>
-
-              <label class="field-label">Local or global?</label>
-              <div class="toggle-row">
-                <button class="toggle-btn active">Global + Local</button>
-                <button class="toggle-btn">Global only</button>
-              </div>
+            <div class="nav-row">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn next-btn">Next</button>
             </div>
-          </div>
+          </section>
 
-          <div class="nav-row">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn next-btn">Next</button>
-          </div>
-        </section>
-
-        <section class="screen" data-step="7">
-          <div class="card-header">
-            <span class="eyebrow small">Step 6</span>
-            <h2 class="bubble">Your community match</h2>
-          </div>
-
-          <div class="match-box">
-            <div class="match-header">
-              <div class="pill">Recommended</div>
-              <div class="status-dot"></div>
+          <section class="screen" data-step="7">
+            <div class="card-header">
+              <span class="eyebrow small">Step 6</span>
+              <h2 class="bubble">Your community match</h2>
             </div>
 
-            <h3>Teen Support Circle</h3>
-            <p class="match-description">A starting point matched to what you shared.</p>
-            <ul>
-              <li>Age-separated community</li>
-              <li>Supportive group chats</li>
-              <li>Local meetups and resources</li>
-              <li>Private DMs to connect</li>
-            </ul>
-          </div>
+            <div class="match-box">
+              <div class="match-header">
+                <div class="pill">Recommended</div>
+                <div class="status-dot"></div>
+              </div>
 
-          <div class="action-grid"></div>
+              <h3>Teen Support Circle</h3>
+              <p class="match-description">A starting point matched to what you shared.</p>
+              <ul>
+                <li>Age-separated community</li>
+                <li>Supportive group chats</li>
+                <li>Local meetups and resources</li>
+                <li>Private DMs to connect</li>
+              </ul>
+            </div>
 
-          <div class="nav-row end">
-            <button class="ghost-btn prev-btn">Back</button>
-            <button class="primary-btn">Join Now</button>
-          </div>
-        </section>
+            <div class="action-grid"></div>
+
+            <div class="nav-row end">
+              <button class="ghost-btn prev-btn">Back</button>
+              <button class="primary-btn">Join Now</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- About Us Page -->
+        <div id="about-page" class="page-content">
+          <section class="screen active">
+            <div class="card-header">
+              <h1 class="bubble">About Us</h1>
+            </div>
+            <div class="content-section">
+              <p class="subtext">Coming soon! This page will share our mission, vision, and team story.</p>
+            </div>
+            <div class="nav-row">
+              <button class="ghost-btn" onclick="navigateTo('home')">Back to Home</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Resources Page -->
+        <div id="resources-page" class="page-content">
+          <section class="screen active">
+            <div class="card-header">
+              <h1 class="bubble">Resources</h1>
+            </div>
+            <div class="content-section">
+              <p class="subtext">Coming soon! Helpful resources and guides will be available here.</p>
+            </div>
+            <div class="nav-row">
+              <button class="ghost-btn" onclick="navigateTo('home')">Back to Home</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact-page" class="page-content">
+          <section class="screen active">
+            <div class="card-header">
+              <h1 class="bubble">Contact</h1>
+            </div>
+            <div class="content-section">
+              <p class="subtext">Coming soon! Get in touch with us through this page.</p>
+            </div>
+            <div class="nav-row">
+              <button class="ghost-btn" onclick="navigateTo('home')">Back to Home</button>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
 

@@ -751,6 +751,7 @@ function updateReturningUserPanel() {
   }
 
   if (returningAccountSelect) {
+    const previousSelection = returningAccountSelect.value;
     const options = hasStoredAccounts
       ? appState.storedAccounts.map((stored) => `
           <option value="${escapeHtml(stored.id)}">${escapeHtml(stored.firstName || 'Member')} · ${escapeHtml(stored.email)}</option>
@@ -759,6 +760,10 @@ function updateReturningUserPanel() {
     returningAccountSelect.innerHTML = options;
     if (signedIn) {
       returningAccountSelect.value = account.id;
+    } else if (hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === previousSelection)) {
+      returningAccountSelect.value = previousSelection;
+    } else if (hasStoredAccounts) {
+      returningAccountSelect.value = appState.storedAccounts[0].id;
     } else {
       returningAccountSelect.value = '';
     }
@@ -1186,8 +1191,10 @@ if (saveSettingsButton) {
     account.subcategory = subcategoryOptions.includes(requestedSubcategory) ? requestedSubcategory : '';
     account.school = settingsSchool.value.trim() || 'Not shared yet';
     account.locationMode = settingsLocation.value.trim() || account.locationMode;
-    account.interests = parseInterestInput(settingsInterests?.value) || account.interests;
-    if (account.interests.length === 0) {
+    const enteredInterests = parseInterestInput(settingsInterests?.value);
+    if (enteredInterests.length > 0) {
+      account.interests = enteredInterests;
+    } else if (!Array.isArray(account.interests) || account.interests.length === 0) {
       account.interests = ['Music'];
     }
     account.bio = settingsBio?.value.trim() || '';

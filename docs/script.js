@@ -30,6 +30,7 @@ const settingsLocation = document.getElementById('settingsLocation');
 const saveSettingsButton = document.getElementById('saveSettingsButton');
 const accountPosts = document.getElementById('accountPosts');
 const joinNowButton = document.getElementById('joinNowButton');
+const appNotice = document.getElementById('appNotice');
 
 let currentStep = 0;
 let selectedGoal = 'A community';
@@ -289,10 +290,19 @@ function showStep(stepIndex) {
   stepPills.forEach((pill, index) => pill.classList.toggle('active', index === currentStep));
 }
 
+function setAppNotice(message) {
+  if (!appNotice) return;
+  appNotice.textContent = message;
+  appNotice.classList.toggle('hidden-field', !message);
+}
+
 function navigateTo(page) {
   let nextPage = page;
   if ((nextPage === 'people' || nextPage === 'account') && !appState.currentAccount) {
     nextPage = 'home';
+    setAppNotice('Create your account first to open People and account controls.');
+  } else {
+    setAppNotice('');
   }
 
   const pages = document.querySelectorAll('.page-content');
@@ -406,7 +416,7 @@ function renderAccountPosts() {
         </div>
         ${editable ? `
           <label class="field-label" for="post-editor-${escapeHtml(post.id)}">Edit post</label>
-          <textarea id="post-editor-${escapeHtml(post.id)}" class="text-field area" data-post-editor="${escapeHtml(post.id)}">${escapeHtml(post.body)}</textarea>
+          <textarea id="post-editor-${escapeHtml(post.id)}" class="text-field area" data-post-editor="${escapeHtml(post.id)}"></textarea>
           <button class="primary-btn post-save-btn" type="button" data-post-id="${escapeHtml(post.id)}">Save post</button>
         ` : `
           <p>${escapeHtml(post.body)}</p>
@@ -415,6 +425,14 @@ function renderAccountPosts() {
       </article>
     `;
   }).join('');
+
+  appState.posts.forEach((post) => {
+    if (!canManageOwnerContent(post.ownerId)) return;
+    const editor = document.querySelector(`[data-post-editor="${post.id}"]`);
+    if (editor) {
+      editor.value = post.body;
+    }
+  });
 
   document.querySelectorAll('.post-save-btn').forEach((button) => {
     button.addEventListener('click', () => {
@@ -538,8 +556,8 @@ function renderAccountPage() {
     if (field) field.disabled = !canUseSettings;
   });
   if (settingsProblem) {
-    settingsProblem.disabled = false;
-    settingsProblem.readOnly = true;
+    settingsProblem.disabled = !canUseSettings;
+    settingsProblem.readOnly = canUseSettings;
   }
   if (saveSettingsButton) saveSettingsButton.disabled = !canUseSettings;
 

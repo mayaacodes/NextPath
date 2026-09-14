@@ -8,6 +8,7 @@ const ageNote = document.getElementById('ageNote');
 const ageTag = document.getElementById('ageTag');
 const firstNameInput = document.getElementById('firstName');
 const emailInput = document.getElementById('emailAddress');
+const passwordInput = document.getElementById('password');
 const profileBio = document.getElementById('profileBio');
 const accountSummary = document.getElementById('accountSummary');
 const accountSummaryButton = document.getElementById('accountSummaryButton');
@@ -15,6 +16,14 @@ const accountSettingsButton = document.getElementById('accountSettingsButton');
 const accountSummaryAvatar = document.getElementById('accountSummaryAvatar');
 const accountSummaryName = document.getElementById('accountSummaryName');
 const accountSummaryMeta = document.getElementById('accountSummaryMeta');
+const homeGuestPanel = document.getElementById('homeGuestPanel');
+const homeAuthenticatedPanel = document.getElementById('homeAuthenticatedPanel');
+const homeAuthenticatedCopy = document.getElementById('homeAuthenticatedCopy');
+const homeSignupButton = document.getElementById('homeSignupButton');
+const homeLoginButton = document.getElementById('homeLoginButton');
+const homePeopleButton = document.getElementById('homePeopleButton');
+const homeAccountButton = document.getElementById('homeAccountButton');
+const signupLoginButton = document.getElementById('signupLoginButton');
 const authOnlyElements = Array.from(document.querySelectorAll('[data-auth-only="true"]'));
 const peopleContext = document.getElementById('peopleContext');
 const peopleEmptyState = document.getElementById('peopleEmptyState');
@@ -42,6 +51,12 @@ const returningAccountSelect = document.getElementById('returningAccountSelect')
 const returningLoginButton = document.getElementById('returningLoginButton');
 const signOutButton = document.getElementById('signOutButton');
 const resumeOnboardingButton = document.getElementById('resumeOnboardingButton');
+const loginStatus = document.getElementById('loginStatus');
+const loginForm = document.getElementById('loginForm');
+const loginAccountSelect = document.getElementById('loginAccountSelect');
+const loginEmailInput = document.getElementById('loginEmail');
+const loginPasswordInput = document.getElementById('loginPassword');
+const loginBackButton = document.getElementById('loginBackButton');
 
 let currentStep = 0;
 let selectedGoal = 'A community';
@@ -56,6 +71,7 @@ const appState = {
 };
 
 const ACCOUNT_STORAGE_KEY = 'nextpath.accounts.v1';
+const ACTIVE_ACCOUNT_STORAGE_KEY = 'nextpath.activeAccount.v1';
 
 const pathwayMap = {
   'A community': {
@@ -225,15 +241,72 @@ function saveStoredAccounts() {
   }
 }
 
+function setActiveAccountId(accountId) {
+  try {
+    if (accountId) {
+      localStorage.setItem(ACTIVE_ACCOUNT_STORAGE_KEY, accountId);
+    } else {
+      localStorage.removeItem(ACTIVE_ACCOUNT_STORAGE_KEY);
+    }
+  } catch (error) {
+    // Ignore storage failures in restricted environments.
+  }
+}
+
+function getActiveAccountId() {
+  try {
+    return localStorage.getItem(ACTIVE_ACCOUNT_STORAGE_KEY) || '';
+  } catch (error) {
+    return '';
+  }
+}
+
+async function createPasswordHash(password) {
+  const rawPassword = String(password || '');
+  if (!rawPassword) return '';
+
+  if (window.crypto?.subtle && window.TextEncoder) {
+    const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawPassword));
+    const hex = Array.from(new Uint8Array(buffer))
+      .map((value) => value.toString(16).padStart(2, '0'))
+      .join('');
+    return `sha256:${hex}`;
+  }
+
+  return `plain:${rawPassword}`;
+}
+
+function hydrateAccount(storedAccount) {
+  if (!storedAccount) return null;
+  return {
+    id: storedAccount.id,
+    age: Number(storedAccount.age || ageRange?.value || 15),
+    firstName: storedAccount.firstName || 'Member',
+    email: normalizeEmail(storedAccount.email),
+    passwordHash: storedAccount.passwordHash || '',
+    school: storedAccount.school || 'Not shared yet',
+    bio: storedAccount.bio || '',
+    locationMode: storedAccount.locationMode || 'Global + Local',
+    interests: Array.isArray(storedAccount.interests) && storedAccount.interests.length ? storedAccount.interests : ['Music'],
+    goal: storedAccount.goal || 'A community',
+    category: storedAccount.category || 'Loss & Grief',
+    subcategory: storedAccount.subcategory || '',
+    avatarColor: storedAccount.avatarColor || 'blue',
+    avatarImageData: sanitizeAvatarImageData(storedAccount.avatarImageData)
+  };
+}
+
 function rememberAccount(account) {
   const email = normalizeEmail(account?.email);
   if (!email) return;
 
+  const existingAccount = appState.storedAccounts.find((item) => normalizeEmail(item.email) === email);
   const nextEntry = {
     id: account.id,
     age: Number(account.age || ageRange?.value || 15),
     firstName: account.firstName,
     email,
+    passwordHash: account.passwordHash || existingAccount?.passwordHash || '',
     school: account.school || 'Not shared yet',
     bio: account.bio || '',
     locationMode: account.locationMode || 'Global + Local',
@@ -255,6 +328,7 @@ function rememberAccount(account) {
 
   appState.hasCreatedAccount = appState.storedAccounts.length > 0;
   saveStoredAccounts();
+  setActiveAccountId(nextEntry.id);
 }
 
 function getAgeGroup(age) {
@@ -383,7 +457,10 @@ function navigateTo(page) {
   let nextPage = page;
   if ((nextPage === 'people' || nextPage === 'account') && !appState.currentAccount) {
     nextPage = 'home';
-    setAppNotice('Create your account first to open People and account controls.');
+    setAppNotice('Sign up or log in first to open People and account controls.');
+  } else if (nextPage === 'signup' && appState.currentAccount) {
+    nextPage = 'home';
+    setAppNotice('You are already signed in.');
   } else {
     setAppNotice('');
   }
@@ -399,9 +476,29 @@ function navigateTo(page) {
     targetPage.classList.add('active');
   }
 
-  const activeLink = document.querySelector(`[data-page="${nextPage}"]`);
+  const navPage = (nextPage === 'signup' || nextPage === 'login') ? 'home' : nextPage;
+  const activeLink = document.querySelector(`[data-page="${navPage}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
+  }
+}
+
+function updateHomePage() {
+  const account = appState.currentAccount;
+  const isAuthenticated = Boolean(account);
+
+  if (homeGuestPanel) {
+    homeGuestPanel.classList.toggle('hidden-field', isAuthenticated);
+  }
+
+  if (homeAuthenticatedPanel) {
+    homeAuthenticatedPanel.classList.toggle('hidden-field', !isAuthenticated);
+  }
+
+  if (homeAuthenticatedCopy) {
+    homeAuthenticatedCopy.textContent = isAuthenticated
+      ? `Welcome back, ${account.firstName}. Your saved profile and People matches are ready.`
+      : "You're signed in and ready to pick up where you left off.";
   }
 }
 
@@ -598,6 +695,7 @@ function syncProfileInputs(account) {
   }
   if (firstNameInput) firstNameInput.value = account.firstName;
   if (emailInput) emailInput.value = account.email;
+  if (passwordInput) passwordInput.value = '';
   if (schoolSearch) {
     schoolSearch.value = account.school === 'Not shared yet' ? '' : account.school;
   }
@@ -739,15 +837,20 @@ function updateReturningUserPanel() {
   const hasStoredAccounts = appState.storedAccounts.length > 0;
   const account = appState.currentAccount;
   const signedIn = Boolean(account);
+  const returningStatusText = signedIn
+    ? `Signed in as ${account.firstName}. This browser remembers ${hasStoredAccounts ? appState.storedAccounts.length : 1} account${(hasStoredAccounts ? appState.storedAccounts.length : 1) === 1 ? '' : 's'} for returning login.`
+    : hasStoredAccounts
+      ? `Sign in with your saved email to continue. ${appState.storedAccounts.length} remembered account${appState.storedAccounts.length === 1 ? '' : 's'} found on this browser.`
+      : 'Create an account to unlock sign-in for later visits on this browser.';
 
   if (returningUserStatus) {
-    if (signedIn) {
-      returningUserStatus.textContent = `Signed in as ${account.firstName}. This browser remembers ${hasStoredAccounts ? appState.storedAccounts.length : 1} account${(hasStoredAccounts ? appState.storedAccounts.length : 1) === 1 ? '' : 's'} for returning login.`;
-    } else if (hasStoredAccounts) {
-      returningUserStatus.textContent = `Sign in with your saved email to continue. ${appState.storedAccounts.length} remembered account${appState.storedAccounts.length === 1 ? '' : 's'} found on this browser.`;
-    } else {
-      returningUserStatus.textContent = 'Create an account to unlock sign-in for later visits on this browser.';
-    }
+    returningUserStatus.textContent = returningStatusText;
+  }
+
+  if (loginStatus) {
+    loginStatus.textContent = hasStoredAccounts
+      ? 'Choose a remembered account or enter the matching email and password to continue.'
+      : 'Create an account first if this is your first visit on this browser.';
   }
 
   if (returningAccountSelect) {
@@ -766,6 +869,25 @@ function updateReturningUserPanel() {
       returningAccountSelect.value = appState.storedAccounts[0].id;
     } else {
       returningAccountSelect.value = '';
+    }
+  }
+
+  if (loginAccountSelect) {
+    const previousSelection = loginAccountSelect.value;
+    const options = hasStoredAccounts
+      ? ['<option value="">Choose an account</option>']
+        .concat(appState.storedAccounts.map((stored) => `
+          <option value="${escapeHtml(stored.id)}">${escapeHtml(stored.firstName || 'Member')} · ${escapeHtml(stored.email)}</option>
+        `))
+        .join('')
+      : '<option value="">No saved accounts yet</option>';
+    loginAccountSelect.innerHTML = options;
+    if (signedIn) {
+      loginAccountSelect.value = account.id;
+    } else if (hasStoredAccounts && appState.storedAccounts.some((stored) => stored.id === previousSelection)) {
+      loginAccountSelect.value = previousSelection;
+    } else {
+      loginAccountSelect.value = '';
     }
   }
 
@@ -797,6 +919,11 @@ function updateAuthenticatedUI() {
     stepIndicator.classList.toggle('hidden-field', hideStepNumbers);
   }
 
+  if (passwordInput) {
+    passwordInput.required = !account?.passwordHash;
+  }
+
+  updateHomePage();
   renderPeopleMatches();
   renderAccountPage();
   updateReturningUserPanel();
@@ -805,15 +932,25 @@ function updateAuthenticatedUI() {
 function validateProfileStep() {
   if (firstNameInput && !firstNameInput.reportValidity()) return false;
   if (emailInput && !emailInput.reportValidity()) return false;
+  if (passwordInput) {
+    const requiresPassword = !appState.currentAccount?.passwordHash;
+    const hasPassword = Boolean(passwordInput.value.trim());
+    passwordInput.setCustomValidity(requiresPassword && !hasPassword ? 'Enter a password to create your account.' : '');
+    if (requiresPassword && !passwordInput.reportValidity()) return false;
+  }
   return true;
 }
 
-function saveAccountFromProfile() {
+async function saveAccountFromProfile() {
+  const nextPasswordHash = passwordInput?.value.trim()
+    ? await createPasswordHash(passwordInput.value)
+    : appState.currentAccount?.passwordHash || '';
   const nextAccount = {
     id: appState.currentAccount?.id || `account-${Date.now()}`,
     age: Number(ageRange?.value || 15),
     firstName: firstNameInput?.value.trim() || 'Member',
     email: normalizeEmail(emailInput?.value),
+    passwordHash: nextPasswordHash,
     school: schoolSearch?.value.trim() || otherSchool?.value.trim() || 'Not shared yet',
     bio: profileBio?.value.trim() || '',
     locationMode: getLocationPreference(),
@@ -1113,7 +1250,7 @@ if (noSchoolButton && otherSchool) {
 prevButtons.forEach((button) => button.addEventListener('click', () => showStep(currentStep - 1)));
 
 nextButtons.forEach((button) => {
-  button.addEventListener('click', () => {
+  button.addEventListener('click', async () => {
     const activeScreen = screens[currentStep];
     if (!activeScreen) return;
 
@@ -1127,8 +1264,11 @@ nextButtons.forEach((button) => {
       selectedSubcategory = getActiveChoice(activeScreen);
     } else if (activeScreen.dataset.step === '6') {
       if (!validateProfileStep()) return;
-      saveAccountFromProfile();
-      renderResultScreen();
+      await saveAccountFromProfile();
+      navigateTo('home');
+      showStep(0);
+      setAppNotice(`Welcome, ${appState.currentAccount.firstName}. Your account is ready.`);
+      return;
     }
 
     showStep(currentStep + 1);
@@ -1150,6 +1290,29 @@ if (accountSummaryButton) {
 
 if (accountSettingsButton) {
   accountSettingsButton.addEventListener('click', () => navigateTo('account'));
+}
+
+if (homeSignupButton) {
+  homeSignupButton.addEventListener('click', () => {
+    navigateTo('signup');
+    showStep(0);
+  });
+}
+
+if (homeLoginButton) {
+  homeLoginButton.addEventListener('click', () => navigateTo('login'));
+}
+
+if (homePeopleButton) {
+  homePeopleButton.addEventListener('click', () => navigateTo('people'));
+}
+
+if (homeAccountButton) {
+  homeAccountButton.addEventListener('click', () => navigateTo('account'));
+}
+
+if (signupLoginButton) {
+  signupLoginButton.addEventListener('click', () => navigateTo('login'));
 }
 
 if (joinNowButton) {
@@ -1216,7 +1379,7 @@ if (returningLoginButton) {
   returningLoginButton.addEventListener('click', () => {
     const selectedAccountId = returningAccountSelect?.value;
     if (!selectedAccountId) {
-      setAppNotice('Select a saved account to sign in.');
+      setAppNotice('Select a saved account to continue to Log In.');
       return;
     }
 
@@ -1226,26 +1389,68 @@ if (returningLoginButton) {
       return;
     }
 
-    appState.currentAccount = {
-      id: matchedAccount.id,
-      age: Number(matchedAccount.age || ageRange?.value || 15),
-      firstName: matchedAccount.firstName || 'Member',
-      email: normalizeEmail(matchedAccount.email),
-      school: matchedAccount.school || 'Not shared yet',
-      bio: matchedAccount.bio || '',
-      locationMode: matchedAccount.locationMode || 'Global + Local',
-      interests: Array.isArray(matchedAccount.interests) && matchedAccount.interests.length ? matchedAccount.interests : ['Music'],
-      goal: matchedAccount.goal || 'A community',
-      category: matchedAccount.category || 'Loss & Grief',
-      subcategory: matchedAccount.subcategory || '',
-      avatarColor: matchedAccount.avatarColor || 'blue',
-      avatarImageData: sanitizeAvatarImageData(matchedAccount.avatarImageData)
-    };
+    if (loginAccountSelect) {
+      loginAccountSelect.value = matchedAccount.id;
+    }
+    if (loginEmailInput) {
+      loginEmailInput.value = normalizeEmail(matchedAccount.email);
+    }
+    if (loginPasswordInput) {
+      loginPasswordInput.value = '';
+    }
+    navigateTo('login');
+    setAppNotice(`Enter the password for ${matchedAccount.firstName || 'that account'} to continue.`);
+  });
+}
+
+if (loginAccountSelect) {
+  loginAccountSelect.addEventListener('change', () => {
+    const matchedAccount = appState.storedAccounts.find((account) => account.id === loginAccountSelect.value);
+    if (matchedAccount && loginEmailInput) {
+      loginEmailInput.value = normalizeEmail(matchedAccount.email);
+    }
+  });
+}
+
+if (loginBackButton) {
+  loginBackButton.addEventListener('click', () => navigateTo('home'));
+}
+
+if (loginForm) {
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (loginEmailInput && !loginEmailInput.reportValidity()) return;
+    if (loginPasswordInput) {
+      loginPasswordInput.setCustomValidity(loginPasswordInput.value.trim() ? '' : 'Enter your password to log in.');
+      if (!loginPasswordInput.reportValidity()) return;
+    }
+
+    const email = normalizeEmail(loginEmailInput?.value);
+    const matchedAccount = appState.storedAccounts.find((account) => normalizeEmail(account.email) === email);
+    if (!matchedAccount) {
+      setAppNotice('No saved account found for that email on this browser.');
+      return;
+    }
+
+    if (!matchedAccount.passwordHash) {
+      setAppNotice('This saved account was created before passwords were required. Please sign up again to continue.');
+      return;
+    }
+
+    const submittedHash = await createPasswordHash(loginPasswordInput?.value);
+    if (submittedHash !== matchedAccount.passwordHash) {
+      setAppNotice('That password does not match the saved account.');
+      return;
+    }
+
+    appState.currentAccount = hydrateAccount(matchedAccount);
     appState.hasCreatedAccount = true;
+    setActiveAccountId(matchedAccount.id);
     syncProfileInputs(appState.currentAccount);
     upsertAccountPosts(appState.currentAccount);
     updateAuthenticatedUI();
-    navigateTo('account');
+    navigateTo('home');
+    if (loginPasswordInput) loginPasswordInput.value = '';
     setAppNotice(`Welcome back, ${appState.currentAccount.firstName}.`);
   });
 }
@@ -1253,9 +1458,10 @@ if (returningLoginButton) {
 if (signOutButton) {
   signOutButton.addEventListener('click', () => {
     appState.currentAccount = null;
+    setActiveAccountId('');
     updateAuthenticatedUI();
     navigateTo('home');
-    setAppNotice('Signed out. You can sign in again from the Account tab.');
+    setAppNotice('Signed out. You can sign in again from the Log In page.');
   });
 }
 
@@ -1264,7 +1470,7 @@ if (resumeOnboardingButton) {
     const account = appState.currentAccount;
     if (!account || !canManageOwnerContent(account.id)) return;
     syncProfileInputs(account);
-    navigateTo('home');
+    navigateTo('signup');
     showStep(1);
     setAppNotice('You can now edit every part of your signup flow.');
   });
@@ -1272,6 +1478,15 @@ if (resumeOnboardingButton) {
 
 appState.storedAccounts = loadStoredAccounts();
 appState.hasCreatedAccount = appState.storedAccounts.length > 0;
+const activeAccountId = getActiveAccountId();
+const restoredAccount = appState.storedAccounts.find((account) => account.id === activeAccountId);
+if (restoredAccount) {
+  appState.currentAccount = hydrateAccount(restoredAccount);
+  syncProfileInputs(appState.currentAccount);
+  upsertAccountPosts(appState.currentAccount);
+} else if (activeAccountId) {
+  setActiveAccountId('');
+}
 updateReturningUserPanel();
 
 showStep(0);

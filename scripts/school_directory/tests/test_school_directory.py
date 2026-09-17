@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 
 from scripts.school_directory.build_school_directory import (
-    ROOT,
     build_records,
+    emit_output,
     fixture_paths,
     normalize_for_search,
     read_rows,
@@ -33,16 +33,27 @@ class SchoolDirectoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output_path = Path(tmp) / "school-directory.json"
             rows = {key: read_rows(path) for key, path in fixture_paths().items()}
-            payload = {
-                "records": build_records(rows),
-            }
-            output_path.write_text(json.dumps(payload), encoding="utf-8")
+            emit_output(rows, output_path, retrieved_at="2026-09-17T00:00:00+00:00")
 
             parsed = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertIn("generatedAt", parsed)
+            self.assertIn("retrievedAt", parsed)
+            self.assertIn("coverage", parsed)
+            self.assertTrue(parsed.get("sources"))
             records = parsed["records"]
             self.assertTrue(any(record["type"] == "high-school" for record in records))
             self.assertTrue(any(record["type"] == "college" for record in records))
             self.assertTrue(all(record.get("id") for record in records))
+            for record in records:
+                self.assertTrue(record.get("city"))
+                self.assertTrue(record.get("state"))
+                self.assertTrue(record.get("searchText"))
+                source = record.get("source")
+                self.assertIsInstance(source, dict)
+                self.assertTrue(source.get("dataset"))
+                self.assertTrue(source.get("release"))
+                self.assertTrue(source.get("url"))
+                self.assertTrue(source.get("sourceId"))
 
 
 if __name__ == "__main__":

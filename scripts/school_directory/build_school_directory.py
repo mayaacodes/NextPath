@@ -20,7 +20,7 @@ import unicodedata
 import urllib.request
 import zipfile
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Iterable
@@ -291,11 +291,14 @@ def resolve_inputs(args: argparse.Namespace) -> dict[str, Path]:
     return {key: path.resolve() for key, path in provided.items()}
 
 
-def emit_output(source_rows: dict[str, list[dict[str, str]]], output_path: Path) -> dict[str, Path]:
+def emit_output(
+    source_rows: dict[str, list[dict[str, str]]],
+    output_path: Path,
+    retrieved_at: str | None = None,
+) -> dict[str, Path]:
     records = build_records(source_rows)
     payload = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "retrievedAt": date.today().isoformat(),
         "coverage": "Fixture-limited when run with --fixtures. Run against official NCES releases for production coverage.",
         "sources": [
             {
@@ -307,6 +310,8 @@ def emit_output(source_rows: dict[str, list[dict[str, str]]], output_path: Path)
         ],
         "records": records,
     }
+    if retrieved_at:
+        payload["retrievedAt"] = retrieved_at
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -328,12 +333,14 @@ def main() -> None:
                 suffix = ".zip" if url.lower().endswith(".zip") else ".csv"
                 downloaded_paths[key] = download_to(url, temp / f"{key}{suffix}")
             source_rows = {key: read_rows(path) for key, path in downloaded_paths.items()}
-            emit_output(source_rows, args.output)
+            emit_output(source_rows, args.output, retrieved_at=datetime.now(timezone.utc).isoformat())
         return
 
     paths = resolve_inputs(args)
     source_rows = {key: read_rows(path) for key, path in paths.items()}
-    emit_output(source_rows, args.output)
+    latest_mtime = max(path.stat().st_mtime for path in paths.values())
+    retrieved_at = datetime.fromtimestamp(latest_mtime, tz=timezone.utc).isoformat()
+    emit_output(source_rows, args.output, retrieved_at=retrieved_at)
 
 
 if __name__ == "__main__":

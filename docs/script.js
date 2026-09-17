@@ -1327,6 +1327,12 @@ function scoreSchoolMatch(record, query, queryTokens) {
   return 999;
 }
 
+function hasExactDirectoryMatch(value) {
+  const normalized = normalizeSchoolQuery(value);
+  if (!normalized) return false;
+  return schoolDirectory.some((record) => record.nameSearch === normalized);
+}
+
 function findSchoolMatches(query) {
   const queryTokens = query.split(' ').filter(Boolean);
   return schoolDirectory
@@ -1400,15 +1406,19 @@ async function loadSchoolDirectory() {
     showManualSchoolEntry();
     return;
   }
+  schoolDirectoryLoadFailed = false;
 
   schoolDirectory = records
     .filter((record) => record && record.id && record.name && record.type && record.city && record.state)
-    .map((record) => ({
-      ...record,
-      nameSearch: normalizeSchoolQuery(record.name),
-      searchText: normalizeSchoolQuery(record.searchText || `${record.name} ${record.city} ${record.state}`),
-      tokens: normalizeSchoolQuery(`${record.name} ${record.city} ${record.state}`).split(' ').filter(Boolean),
-    }));
+    .map((record) => {
+      const normalizedSearch = normalizeSchoolQuery(record.searchText || `${record.name} ${record.city} ${record.state}`);
+      return {
+        ...record,
+        nameSearch: normalizeSchoolQuery(record.name),
+        searchText: normalizedSearch,
+        tokens: normalizedSearch.split(' ').filter(Boolean),
+      };
+    });
 
   schoolDirectoryReady = schoolDirectory.length > 0;
   schoolDirectoryLoadFailed = !schoolDirectoryReady;
@@ -1428,7 +1438,13 @@ function updateSchoolSuggestionsFromQuery() {
 
   if (query.length < 2) {
     closeSchoolSuggestions();
-    if (!schoolDirectoryLoadFailed) hideManualSchoolEntry();
+    if (schoolDirectoryLoadFailed) {
+      showManualSchoolEntry();
+    } else if (schoolSearch.value.trim() && !hasExactDirectoryMatch(schoolSearch.value)) {
+      showManualSchoolEntry();
+    } else {
+      hideManualSchoolEntry();
+    }
     return;
   }
 
@@ -1462,6 +1478,10 @@ if (schoolSearch && schoolSuggestions && schoolAbbreviation && otherSchool) {
     if (event.key === 'Escape') {
       closeSchoolSuggestions();
       return;
+    }
+    const isArrowNavigation = event.key === 'ArrowDown' || event.key === 'ArrowUp';
+    if (isArrowNavigation && !visibleSchoolMatches.length) {
+      updateSchoolSuggestionsFromQuery();
     }
     if (!visibleSchoolMatches.length) return;
     if (event.key === 'ArrowDown') {

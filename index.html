@@ -303,10 +303,12 @@
                 <input id="password" type="password" placeholder="Create a password" class="text-field" autocomplete="new-password" required />
                 <p id="passwordHelp" class="field-help">Required to create your account and log back in later.</p>
                 <label class="field-label">School / College</label>
+                <p class="field-help">Directory suggestions are sourced from official NCES/IES datasets and periodically refreshed.</p>
                 <div class="school-search">
-                  <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" />
+                  <input id="schoolSearch" type="text" class="text-field" autocomplete="off" placeholder="Start typing your school..." aria-autocomplete="list" aria-controls="schoolSuggestions" aria-describedby="schoolDirectoryStatus" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-activedescendant="" />
                   <div id="schoolSuggestions" class="school-suggestions" role="listbox"></div>
                 </div>
+                <p id="schoolDirectoryStatus" class="field-help" role="status" aria-live="polite">Loading school directory…</p>
                 <div id="schoolAbbreviation" class="school-abbreviation">Your school initials will appear here</div>
                 <button id="noSchoolButton" type="button" class="small-link">I do not go to school</button>
                 <input id="otherSchool" type="text" class="text-field hidden-field" placeholder="Type your school name here" aria-label="Type your school name" />

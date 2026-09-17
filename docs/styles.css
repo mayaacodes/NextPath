@@ -890,6 +890,12 @@ input[type="range"] {
   background: rgba(184,232,255,0.35);
 }
 
+.school-suggestion.active,
+.school-suggestion:focus-visible {
+  outline: none;
+  background: rgba(184,232,255,0.55);
+}
+
 .school-suggestion small {
   color: var(--sky-900);
   font-weight: 900;

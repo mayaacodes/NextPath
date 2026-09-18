@@ -24,6 +24,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build authoritative school directory
+        run: python scripts/school_directory/build_school_directory.py --download --output docs/data/school-directory.json
+
+      - name: Validate deployable school directory
+        run: python scripts/school_directory/validate_school_directory.py --directory docs/data/school-directory.json --require-production-ready
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

@@ -3,16 +3,34 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
+import sys
 import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.school_directory.build_school_directory import build_integrity_report
+
 DIRECTORY_PATH = ROOT / "docs" / "data" / "school-directory.json"
 SCRIPT_PATH = ROOT / "docs" / "script.js"
 DOCS_INDEX_PATH = ROOT / "docs" / "index.html"
 ROOT_INDEX_PATH = ROOT / "index.html"
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Validate generated school directory payload and signup UI messaging.")
+    parser.add_argument("--directory", type=Path, default=DIRECTORY_PATH, help="Directory JSON path to validate")
+    parser.add_argument(
+        "--require-production-ready",
+        action="store_true",
+        help="Fail unless the payload is explicitly marked productionReady and passes nationwide integrity checks.",
+    )
+    return parser.parse_args()
 
 
 def normalize(text: str) -> str:
@@ -60,7 +78,8 @@ def expect_match(records: list[dict[str, str]], query: str, expected_name_fragme
 
 
 def main() -> None:
-    payload = json.loads(DIRECTORY_PATH.read_text(encoding="utf-8"))
+    args = parse_args()
+    payload = json.loads(args.directory.read_text(encoding="utf-8"))
     records = payload.get("records", [])
     if not records:
         raise AssertionError("Generated directory has no records")
@@ -80,24 +99,41 @@ def main() -> None:
     record_counts = payload.get("recordCounts") or {}
     if record_counts.get("total") != len(records):
         raise AssertionError("recordCounts.total does not match records length")
-    if "fixture-limited" in str(payload.get("coverage", "")).lower() and payload.get("fixtureMode") is not True:
-        raise AssertionError("Fixture-limited payload must set fixtureMode=true")
+    integrity = build_integrity_report(records, fixture_mode=payload.get("fixtureMode") is True)
+    if payload.get("integrity", {}).get("sourceRecordCounts") and payload["integrity"]["sourceRecordCounts"] != integrity["sourceRecordCounts"]:
+        raise AssertionError("integrity.sourceRecordCounts does not match the computed directory contents")
+    if payload.get("productionReady") is True and payload.get("fixtureMode") is True:
+        raise AssertionError("Fixture payload cannot be productionReady")
+    if payload.get("fixtureMode") is True and payload.get("directoryStatus") != "development-fixture":
+        raise AssertionError("Fixture payload must set directoryStatus=development-fixture")
+    if payload.get("fixtureMode") is True and "not the complete u.s. directory" not in str(payload.get("coverage", "")).lower():
+        raise AssertionError("Fixture payload must clearly disclose that it is not the complete U.S. directory")
+    if payload.get("productionReady") is True and payload.get("directoryStatus") != "authoritative-national":
+        raise AssertionError("Production-ready payload must set directoryStatus=authoritative-national")
+    if args.require_production_ready:
+        if payload.get("productionReady") is not True:
+            raise AssertionError("Production validation requires productionReady=true")
+        if integrity["productionReady"] is not True:
+            raise AssertionError("Production validation failed integrity checks: " + "; ".join(integrity["failures"]))
 
     script_text = SCRIPT_PATH.read_text(encoding="utf-8")
     if "School directory unavailable right now. Type your school manually below." not in script_text:
         raise AssertionError("Missing manual fallback message for unavailable directory asset")
-    if "Preview directory loaded for development only" not in script_text:
+    if "Development preview directory loaded" not in script_text:
         raise AssertionError("Missing preview-directory status message for fixture-limited assets")
+    if "School directory suggestions are only partially available right now." not in script_text:
+        raise AssertionError("Missing partial-directory status message for non-production payloads")
+    if "Official U.S. school directory loaded" not in script_text:
+        raise AssertionError("Missing authoritative-directory success status message")
 
     docs_index = DOCS_INDEX_PATH.read_text(encoding="utf-8")
-    if "school-directory-data.md" not in docs_index:
-        raise AssertionError("Missing visible provenance guidance link in docs/index.html")
+    if "school-directory-data.md" in docs_index:
+        raise AssertionError("docs/index.html should not link end users to developer-facing school-directory documentation")
 
     normalized_root_index = (
         ROOT_INDEX_PATH.read_text(encoding="utf-8")
         .replace('href="docs/styles.css"', 'href="styles.css"')
         .replace('src="docs/script.js"', 'src="script.js"')
-        .replace('href="docs/school-directory-data.md"', 'href="school-directory-data.md"')
     )
     if normalized_root_index != docs_index:
         raise AssertionError("Root index.html is out of sync with docs/index.html")

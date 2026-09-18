@@ -98,6 +98,7 @@ async function testLoadSuccess() {
     async json() {
       return {
         fixtureMode: false,
+        productionReady: true,
         records: [
           { id: 'ccd-public:1', name: 'Lincoln High School', type: 'high-school', city: 'Portland', state: 'OR', searchText: 'lincoln high school portland or' },
         ],
@@ -107,7 +108,7 @@ async function testLoadSuccess() {
   const api = loadSchoolSnippet(context);
   await api.loadSchoolDirectory();
 
-  if (!context.__elements.schoolDirectoryStatus.textContent.includes('Directory loaded')) {
+  if (!context.__elements.schoolDirectoryStatus.textContent.includes('Official U.S. school directory loaded')) {
     throw new Error('Expected success status after loading directory');
   }
 }
@@ -127,11 +128,35 @@ async function testFixturePreviewShowsGuidance() {
   const api = loadSchoolSnippet(context);
   await api.loadSchoolDirectory();
 
-  if (!context.__elements.schoolDirectoryStatus.textContent.includes('Preview directory loaded')) {
+  if (!context.__elements.schoolDirectoryStatus.textContent.includes('Development preview directory loaded')) {
     throw new Error('Expected preview guidance when fixture-limited directory data loads');
   }
   if (context.__elements.otherSchool.classList.contains('hidden-field')) {
     throw new Error('Expected manual school input to stay visible for fixture preview data');
+  }
+}
+
+async function testPartialOfficialDataShowsManualFallback() {
+  const context = buildContext(async () => ({
+    ok: true,
+    async json() {
+      return {
+        fixtureMode: false,
+        productionReady: false,
+        records: [
+          { id: 'ccd-public:1', name: 'Lincoln High School', type: 'high-school', city: 'Portland', state: 'OR', searchText: 'lincoln high school portland or' },
+        ],
+      };
+    },
+  }));
+  const api = loadSchoolSnippet(context);
+  await api.loadSchoolDirectory();
+
+  if (!context.__elements.schoolDirectoryStatus.textContent.includes('only partially available')) {
+    throw new Error('Expected partial-data guidance when productionReady is false');
+  }
+  if (context.__elements.otherSchool.classList.contains('hidden-field')) {
+    throw new Error('Expected manual school input to stay visible for partial official data');
   }
 }
 
@@ -153,6 +178,7 @@ async function testLoadFailureShowsManualFallback() {
 (async () => {
   await testLoadSuccess();
   await testFixturePreviewShowsGuidance();
+  await testPartialOfficialDataShowsManualFallback();
   await testLoadFailureShowsManualFallback();
   console.log('Frontend school autocomplete validation passed');
 })().catch((error) => {

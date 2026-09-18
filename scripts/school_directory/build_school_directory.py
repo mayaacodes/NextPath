@@ -30,7 +30,7 @@ DEFAULT_OUTPUT = ROOT / "docs" / "data" / "school-directory.json"
 
 DEFAULT_SOURCES = {
     "public": {
-        "url": "https://data-nces.opendata.arcgis.com/api/download/v1/items/5cd68dad64f641f6b847367493e92657/csv?layers=3",
+        "url": "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCHOOL_2425.csv",
         "dataset": "NCES CCD Public School Locations",
         "release": "2024-25",
     },

@@ -35,7 +35,7 @@ Run from the repository root:
 
 ```bash
 python scripts/school_directory/build_school_directory.py --download --output docs/data/school-directory.json
-python scripts/school_directory/validate_school_directory.py --directory docs/data/school-directory.json --require-production-ready
+python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json --require-production-ready
 ```
 
 ### Refresh from already-downloaded official files
@@ -46,14 +46,14 @@ python scripts/school_directory/build_school_directory.py \
   --private-file /absolute/path/to/private-school-source.csv \
   --college-file /absolute/path/to/postsecondary-source.csv \
   --output docs/data/school-directory.json
-python scripts/school_directory/validate_school_directory.py --directory docs/data/school-directory.json --require-production-ready
+python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json --require-production-ready
 ```
 
 ### Local offline fixture build
 
 ```bash
 python scripts/school_directory/build_school_directory.py --fixtures --output docs/data/school-directory.json
-python scripts/school_directory/validate_school_directory.py --directory docs/data/school-directory.json
+python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json
 ```
 
 ## Normalization, filtering, and safeguards

@@ -6,13 +6,10 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from scripts.school_directory.build_school_directory import build_integrity_report
 

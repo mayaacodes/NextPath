@@ -5,6 +5,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from scripts.school_directory.build_school_directory import (
+    DEFAULT_SOURCES,
     build_records,
     build_integrity_report,
     download_to,
@@ -90,6 +91,14 @@ class SchoolDirectoryTests(unittest.TestCase):
             self.assertFalse(parsed["productionReady"])
             self.assertTrue(parsed.get("sources"))
             self.assertIn("integrity", parsed)
+            self.assertEqual(
+                {source["dataset"]: source["url"] for source in parsed["sources"]},
+                {
+                    "ccd-public": DEFAULT_SOURCES["public"]["url"],
+                    "pss-private": DEFAULT_SOURCES["private"]["url"],
+                    "ipeds-postsecondary": DEFAULT_SOURCES["college"]["url"],
+                },
+            )
             self.assertEqual(parsed["recordCounts"]["total"], len(parsed["records"]))
             records = parsed["records"]
             self.assertTrue(any(record["type"] == "high-school" for record in records))

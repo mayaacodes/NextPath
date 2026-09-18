@@ -1238,6 +1238,7 @@ let schoolDirectory = [];
 let schoolDirectoryReady = false;
 let schoolDirectoryLoadFailed = false;
 let schoolDirectoryIsPreview = false;
+let schoolDirectoryProductionReady = false;
 let visibleSchoolMatches = [];
 let activeSchoolMatchIndex = -1;
 
@@ -1407,6 +1408,7 @@ async function loadSchoolDirectory() {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
     schoolDirectoryIsPreview = false;
+    schoolDirectoryProductionReady = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
@@ -1417,12 +1419,14 @@ async function loadSchoolDirectory() {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
     schoolDirectoryIsPreview = false;
+    schoolDirectoryProductionReady = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
   }
   schoolDirectoryLoadFailed = false;
   schoolDirectoryIsPreview = payload.fixtureMode === true;
+  schoolDirectoryProductionReady = payload.productionReady === true;
 
   schoolDirectory = records
     .filter((record) => record && record.id && record.name && record.type && record.city && record.state)
@@ -1445,12 +1449,18 @@ async function loadSchoolDirectory() {
   }
 
   if (schoolDirectoryIsPreview) {
-    setSchoolDirectoryStatus(`Preview directory loaded for development only (${schoolDirectory.length.toLocaleString()} records). Refresh the NCES data file for complete U.S. coverage, or type your school manually below.`);
+    setSchoolDirectoryStatus(`Development preview directory loaded (${schoolDirectory.length.toLocaleString()} records). It does not cover every U.S. school yet, so you can type your school manually below.`);
     showManualSchoolEntry();
     return;
   }
 
-  setSchoolDirectoryStatus(`Directory loaded (${schoolDirectory.length.toLocaleString()} schools).`);
+  if (!schoolDirectoryProductionReady) {
+    setSchoolDirectoryStatus('School directory suggestions are only partially available right now. You can still type your school manually below.');
+    showManualSchoolEntry();
+    return;
+  }
+
+  setSchoolDirectoryStatus(`Official U.S. school directory loaded (${schoolDirectory.length.toLocaleString()} schools).`);
 }
 
 function updateSchoolSuggestionsFromQuery() {
@@ -1462,7 +1472,7 @@ function updateSchoolSuggestionsFromQuery() {
     closeSchoolSuggestions();
     if (schoolDirectoryLoadFailed) {
       showManualSchoolEntry();
-    } else if (schoolDirectoryIsPreview) {
+    } else if (schoolDirectoryIsPreview || !schoolDirectoryProductionReady) {
       showManualSchoolEntry();
     } else if (schoolSearch.value.trim() && !hasExactDirectoryMatch(schoolSearch.value)) {
       showManualSchoolEntry();
@@ -1487,7 +1497,7 @@ function updateSchoolSuggestionsFromQuery() {
   renderSchoolSuggestions(visibleSchoolMatches);
 
   if (visibleSchoolMatches.length > 0) {
-    if (!schoolDirectoryIsPreview) {
+    if (schoolDirectoryProductionReady) {
       hideManualSchoolEntry();
     }
     return;
@@ -1497,7 +1507,11 @@ function updateSchoolSuggestionsFromQuery() {
   setSchoolDirectoryStatus(
     schoolDirectoryIsPreview
       ? 'No preview-directory match found. You can type your school manually below.'
-      : 'No directory match found. You can type your school manually below.'
+      : (
+        schoolDirectoryProductionReady
+          ? 'No directory match found. You can type your school manually below.'
+          : 'No verified directory match found in the partial data currently available. You can type your school manually below.'
+      )
   );
 }
 

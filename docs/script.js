@@ -469,7 +469,8 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
         type="button"
         class="login-account-tile${isSelected ? ' is-selected' : ''}"
         data-account-id="${escapeHtml(stored.id)}"
-        aria-pressed="${isSelected ? 'true' : 'false'}"
+        role="radio"
+        aria-checked="${isSelected ? 'true' : 'false'}"
         aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
       >
         <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
@@ -485,9 +486,10 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
     return accountTiles;
   }
 
+  const manualEntrySelected = !selectedLoginAccountId;
   return `
     ${accountTiles}
-    <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" aria-pressed="false" aria-label="Add account and enter email manually">
+    <button type="button" class="login-account-tile login-account-add-tile${manualEntrySelected ? ' is-selected' : ''}" data-add-account="true" role="radio" aria-checked="${manualEntrySelected ? 'true' : 'false'}" aria-label="Add account and enter email manually">
       <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
       <span class="login-account-copy">
         <strong>Add account</strong>
@@ -1128,6 +1130,17 @@ function saveCropToPreview() {
   }
 }
 
+function moveLoginAccountPickerFocus(picker, currentTile, direction) {
+  const tiles = Array.from(picker.querySelectorAll('.login-account-tile'));
+  if (!tiles.length) return;
+  const currentIndex = Math.max(tiles.indexOf(currentTile), 0);
+  const nextIndex = (currentIndex + direction + tiles.length) % tiles.length;
+  const nextTile = tiles[nextIndex];
+  if (!nextTile) return;
+  nextTile.focus();
+  nextTile.click();
+}
+
 function openCropper(imageSrc) {
   if (!avatarCropperModal || !avatarZoom || !avatarX || !avatarY) return;
   avatarCropperModal.classList.add('show');
@@ -1697,6 +1710,17 @@ if (returningAccountPicker) {
     selectedLoginAccountId = matchedAccount.id;
     updateReturningUserPanel();
   });
+  returningAccountPicker.addEventListener('keydown', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(returningAccountPicker, tile, 1);
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(returningAccountPicker, tile, -1);
+    }
+  });
 }
 
 if (loginAccountPicker) {
@@ -1723,6 +1747,17 @@ if (loginAccountPicker) {
     if (loginEmailInput) loginEmailInput.value = normalizeEmail(matchedAccount.email);
     updateReturningUserPanel();
     if (loginPasswordInput) loginPasswordInput.focus();
+  });
+  loginAccountPicker.addEventListener('keydown', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(loginAccountPicker, tile, 1);
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(loginAccountPicker, tile, -1);
+    }
   });
 }
 

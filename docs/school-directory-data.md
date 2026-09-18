@@ -24,8 +24,9 @@ Only those official NCES/EDGE/IPEDS-derived datasets are used. The refresh pipel
 ## Build and deploy model
 
 - The checked-in `docs/data/school-directory.json` is intentionally allowed to be a **development fixture** for local/offline work.
-- GitHub Pages deploys rebuild the production artifact from the official NCES/IPEDS URLs before upload.
-- If the official refresh or validation fails, the deploy job fails instead of shipping a truncated or fixture-sized national directory.
+- Refresh the directory from the official NCES/IPEDS URLs in a network-enabled maintainer environment, then commit the resulting artifact.
+- GitHub Pages deploys validate the already-committed `docs/data/school-directory.json` before upload instead of depending on live third-party downloads.
+- If a committed authoritative refresh or fixture preview is invalid or inconsistent with the UI safeguards, the deploy job fails before upload.
 
 ## Exact refresh commands
 

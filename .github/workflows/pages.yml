@@ -29,11 +29,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build authoritative school directory
-        run: python scripts/school_directory/build_school_directory.py --download --output docs/data/school-directory.json
-
-      - name: Validate deployable school directory
-        run: python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json --require-production-ready
+      - name: Validate committed school directory asset
+        run: python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -4,7 +4,7 @@ This repository contains a small C++ project structure for the [NextPath website
 
 ## School directory data
 
-The signup school/college autocomplete is built only from authoritative NCES/EDGE/IPEDS-derived federal datasets. The checked-in `docs/data/school-directory.json` may be a development fixture for local/offline work, while the GitHub Pages workflow rebuilds and validates the production artifact from official sources before deploy. Refresh details and integrity checks are documented in `docs/school-directory-data.md`.
+The signup school/college autocomplete is built only from authoritative NCES/EDGE/IPEDS-derived federal datasets. The checked-in `docs/data/school-directory.json` may be either an authoritative refreshed asset or a development fixture for local/offline work, and the GitHub Pages workflow validates the committed artifact before deploy. Refresh details and integrity checks are documented in `docs/school-directory-data.md`.
 
 ## Layout
 

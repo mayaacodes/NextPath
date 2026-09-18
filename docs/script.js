@@ -1225,6 +1225,7 @@ const MAX_SCHOOL_RESULTS = 10;
 let schoolDirectory = [];
 let schoolDirectoryReady = false;
 let schoolDirectoryLoadFailed = false;
+let schoolDirectoryIsPreview = false;
 let visibleSchoolMatches = [];
 let activeSchoolMatchIndex = -1;
 
@@ -1393,6 +1394,7 @@ async function loadSchoolDirectory() {
   if (!payload) {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
+    schoolDirectoryIsPreview = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
@@ -1402,11 +1404,13 @@ async function loadSchoolDirectory() {
   if (!Array.isArray(records)) {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
+    schoolDirectoryIsPreview = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
   }
   schoolDirectoryLoadFailed = false;
+  schoolDirectoryIsPreview = payload.fixtureMode === true;
 
   schoolDirectory = records
     .filter((record) => record && record.id && record.name && record.type && record.city && record.state)
@@ -1428,6 +1432,12 @@ async function loadSchoolDirectory() {
     return;
   }
 
+  if (schoolDirectoryIsPreview) {
+    setSchoolDirectoryStatus(`Preview directory loaded for development only (${schoolDirectory.length.toLocaleString()} records). Refresh the NCES data file for complete U.S. coverage, or type your school manually below.`);
+    showManualSchoolEntry();
+    return;
+  }
+
   setSchoolDirectoryStatus(`Directory loaded (${schoolDirectory.length.toLocaleString()} schools).`);
 }
 
@@ -1439,6 +1449,8 @@ function updateSchoolSuggestionsFromQuery() {
   if (query.length < 2) {
     closeSchoolSuggestions();
     if (schoolDirectoryLoadFailed) {
+      showManualSchoolEntry();
+    } else if (schoolDirectoryIsPreview) {
       showManualSchoolEntry();
     } else if (schoolSearch.value.trim() && !hasExactDirectoryMatch(schoolSearch.value)) {
       showManualSchoolEntry();
@@ -1463,12 +1475,18 @@ function updateSchoolSuggestionsFromQuery() {
   renderSchoolSuggestions(visibleSchoolMatches);
 
   if (visibleSchoolMatches.length > 0) {
-    hideManualSchoolEntry();
+    if (!schoolDirectoryIsPreview) {
+      hideManualSchoolEntry();
+    }
     return;
   }
 
   showManualSchoolEntry();
-  setSchoolDirectoryStatus('No directory match found. You can type your school manually below.');
+  setSchoolDirectoryStatus(
+    schoolDirectoryIsPreview
+      ? 'No preview-directory match found. You can type your school manually below.'
+      : 'No directory match found. You can type your school manually below.'
+  );
 }
 
 if (schoolSearch && schoolSuggestions && schoolAbbreviation && otherSchool) {

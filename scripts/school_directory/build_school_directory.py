@@ -134,6 +134,33 @@ def is_high_school_private(row: dict[str, str]) -> bool:
     return any(school_name.endswith(suffix) or f" {suffix} " in f" {school_name} " for suffix in HIGH_SCHOOL_SUFFIXES)
 
 
+def is_valid_postsecondary(row: dict[str, str]) -> bool:
+    institution_name = normalize_for_search(pick_field(row, ["INSTNM", "NAME", "INSTITUTION"]))
+    if not institution_name:
+        return False
+
+    status = normalize_for_search(
+        pick_field(
+            row,
+            (
+                "STATUS",
+                "OPERATING_STATUS",
+                "OPERSTAT",
+                "INSTSTAT",
+                "OPENSTAT",
+                "ACT",
+                "ACTIVE",
+            ),
+        )
+    )
+    if status and any(token in status for token in ("closed", "inactive", "not open", "ceased")):
+        return False
+    if status in {"0", "false", "n", "no"}:
+        return False
+
+    return True
+
+
 @dataclass
 class SourceSpec:
     key: str
@@ -183,7 +210,7 @@ SPECS = [
         name_fields=("INSTNM", "NAME", "INSTITUTION"),
         city_fields=("CITY", "LCITY"),
         state_fields=("STABBR", "STATE", "LSTATE"),
-        include_row=lambda _row: True,
+        include_row=is_valid_postsecondary,
     ),
 ]
 
@@ -295,11 +322,19 @@ def emit_output(
     source_rows: dict[str, list[dict[str, str]]],
     output_path: Path,
     retrieved_at: str | None = None,
+    fixture_mode: bool = False,
 ) -> dict[str, Path]:
     records = build_records(source_rows)
+    high_school_count = sum(1 for record in records if record["type"] == "high-school")
+    college_count = sum(1 for record in records if record["type"] == "college")
     payload = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "coverage": "Fixture-limited when run with --fixtures. Run against official NCES releases for production coverage.",
+        "coverage": (
+            "Fixture-limited development preview. Run the NCES refresh command for complete U.S. coverage."
+            if fixture_mode
+            else "Generated from current official NCES source files with coverage across states and territories present in those releases."
+        ),
+        "fixtureMode": fixture_mode,
         "sources": [
             {
                 "dataset": spec.source_label,
@@ -308,6 +343,11 @@ def emit_output(
             }
             for spec in SPECS
         ],
+        "recordCounts": {
+            "total": len(records),
+            "highSchools": high_school_count,
+            "colleges": college_count,
+        },
         "records": records,
     }
     if retrieved_at:
@@ -333,14 +373,19 @@ def main() -> None:
                 suffix = ".zip" if url.lower().endswith(".zip") else ".csv"
                 downloaded_paths[key] = download_to(url, temp / f"{key}{suffix}")
             source_rows = {key: read_rows(path) for key, path in downloaded_paths.items()}
-            emit_output(source_rows, args.output, retrieved_at=datetime.now(timezone.utc).isoformat())
+            emit_output(
+                source_rows,
+                args.output,
+                retrieved_at=datetime.now(timezone.utc).isoformat(),
+                fixture_mode=False,
+            )
         return
 
     paths = resolve_inputs(args)
     source_rows = {key: read_rows(path) for key, path in paths.items()}
     latest_mtime = max(path.stat().st_mtime for path in paths.values())
     retrieved_at = datetime.fromtimestamp(latest_mtime, tz=timezone.utc).isoformat()
-    emit_output(source_rows, args.output, retrieved_at=retrieved_at)
+    emit_output(source_rows, args.output, retrieved_at=retrieved_at, fixture_mode=args.fixtures)
 
 
 if __name__ == "__main__":

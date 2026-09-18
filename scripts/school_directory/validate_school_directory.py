@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DIRECTORY_PATH = ROOT / "docs" / "data" / "school-directory.json"
 SCRIPT_PATH = ROOT / "docs" / "script.js"
+DOCS_INDEX_PATH = ROOT / "docs" / "index.html"
+ROOT_INDEX_PATH = ROOT / "index.html"
 
 
 def normalize(text: str) -> str:
@@ -72,11 +74,33 @@ def main() -> None:
 
     expect_match(records, "lincoln", "Lincoln")
     expect_match(records, "stan", "Stanford")
+    expect_match(records, "community college", "Community College")
     expect_match(records, "portland or", "Lincoln")
+
+    record_counts = payload.get("recordCounts") or {}
+    if record_counts.get("total") != len(records):
+        raise AssertionError("recordCounts.total does not match records length")
+    if "fixture-limited" in str(payload.get("coverage", "")).lower() and payload.get("fixtureMode") is not True:
+        raise AssertionError("Fixture-limited payload must set fixtureMode=true")
 
     script_text = SCRIPT_PATH.read_text(encoding="utf-8")
     if "School directory unavailable right now. Type your school manually below." not in script_text:
         raise AssertionError("Missing manual fallback message for unavailable directory asset")
+    if "Preview directory loaded for development only" not in script_text:
+        raise AssertionError("Missing preview-directory status message for fixture-limited assets")
+
+    docs_index = DOCS_INDEX_PATH.read_text(encoding="utf-8")
+    if "school-directory-data.md" not in docs_index:
+        raise AssertionError("Missing visible provenance guidance link in docs/index.html")
+
+    normalized_root_index = (
+        ROOT_INDEX_PATH.read_text(encoding="utf-8")
+        .replace('href="docs/styles.css"', 'href="styles.css"')
+        .replace('src="docs/script.js"', 'src="script.js"')
+        .replace('href="docs/school-directory-data.md"', 'href="school-directory-data.md"')
+    )
+    if normalized_root_index != docs_index:
+        raise AssertionError("Root index.html is out of sync with docs/index.html")
 
     print("School directory validation passed")
 

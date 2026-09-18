@@ -1,4 +1,7 @@
-UNITID,INSTNM,CITY,STABBR
-243744,Stanford University,Stanford,CA
-166027,Harvard University,Cambridge,MA
-233921,University of Virginia,Charlottesville,VA
+UNITID,INSTNM,CITY,STABBR,STATUS
+243744,Stanford University,Stanford,CA,Open
+166027,Harvard University,Cambridge,MA,Open
+233921,University of Virginia,Charlottesville,VA,Open
+209746,Monroe Community College,Rochester,NY,Open
+209747,Portland Community College,Portland,OR,Open
+999999,Closed Career Institute,Phoenix,AZ,Closed

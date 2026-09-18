@@ -1713,7 +1713,10 @@ if (returningAccountPicker) {
   returningAccountPicker.addEventListener('keydown', (event) => {
     const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
     if (!tile) return;
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+    if (event.key === ' ') {
+      event.preventDefault();
+      tile.click();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       event.preventDefault();
       moveLoginAccountPickerFocus(returningAccountPicker, tile, 1);
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
@@ -1751,7 +1754,10 @@ if (loginAccountPicker) {
   loginAccountPicker.addEventListener('keydown', (event) => {
     const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
     if (!tile) return;
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+    if (event.key === ' ') {
+      event.preventDefault();
+      tile.click();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
       event.preventDefault();
       moveLoginAccountPickerFocus(loginAccountPicker, tile, 1);
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {

@@ -1713,7 +1713,7 @@ if (returningAccountPicker) {
   returningAccountPicker.addEventListener('keydown', (event) => {
     const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
     if (!tile) return;
-    if (event.key === ' ') {
+    if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
       tile.click();
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
@@ -1754,7 +1754,7 @@ if (loginAccountPicker) {
   loginAccountPicker.addEventListener('keydown', (event) => {
     const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
     if (!tile) return;
-    if (event.key === ' ') {
+    if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
       tile.click();
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {

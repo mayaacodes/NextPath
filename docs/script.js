@@ -469,8 +469,8 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
         type="button"
         class="login-account-tile${isSelected ? ' is-selected' : ''}"
         data-account-id="${escapeHtml(stored.id)}"
-        role="option"
-        aria-selected="${isSelected ? 'true' : 'false'}"
+        role="radio"
+        aria-checked="${isSelected ? 'true' : 'false'}"
         aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
       >
         <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
@@ -486,9 +486,10 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
     return accountTiles;
   }
 
+  const manualEntrySelected = !selectedLoginAccountId;
   return `
     ${accountTiles}
-    <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" role="option" aria-selected="false" aria-label="Add account and enter email manually">
+    <button type="button" class="login-account-tile login-account-add-tile${manualEntrySelected ? ' is-selected' : ''}" data-add-account="true" role="radio" aria-checked="${manualEntrySelected ? 'true' : 'false'}" aria-label="Add account and enter email manually">
       <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
       <span class="login-account-copy">
         <strong>Add account</strong>
@@ -1129,6 +1130,17 @@ function saveCropToPreview() {
   }
 }
 
+function moveLoginAccountPickerFocus(picker, currentTile, direction) {
+  const tiles = Array.from(picker.querySelectorAll('.login-account-tile'));
+  if (!tiles.length) return;
+  const currentIndex = Math.max(tiles.indexOf(currentTile), 0);
+  const nextIndex = (currentIndex + direction + tiles.length) % tiles.length;
+  const nextTile = tiles[nextIndex];
+  if (!nextTile) return;
+  nextTile.focus();
+  nextTile.click();
+}
+
 function openCropper(imageSrc) {
   if (!avatarCropperModal || !avatarZoom || !avatarX || !avatarY) return;
   avatarCropperModal.classList.add('show');
@@ -1225,6 +1237,7 @@ const MAX_SCHOOL_RESULTS = 10;
 let schoolDirectory = [];
 let schoolDirectoryReady = false;
 let schoolDirectoryLoadFailed = false;
+let schoolDirectoryIsPreview = false;
 let visibleSchoolMatches = [];
 let activeSchoolMatchIndex = -1;
 
@@ -1393,6 +1406,7 @@ async function loadSchoolDirectory() {
   if (!payload) {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
+    schoolDirectoryIsPreview = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
@@ -1402,11 +1416,13 @@ async function loadSchoolDirectory() {
   if (!Array.isArray(records)) {
     schoolDirectoryReady = false;
     schoolDirectoryLoadFailed = true;
+    schoolDirectoryIsPreview = false;
     setSchoolDirectoryStatus('School directory unavailable right now. Type your school manually below.');
     showManualSchoolEntry();
     return;
   }
   schoolDirectoryLoadFailed = false;
+  schoolDirectoryIsPreview = payload.fixtureMode === true;
 
   schoolDirectory = records
     .filter((record) => record && record.id && record.name && record.type && record.city && record.state)
@@ -1428,6 +1444,12 @@ async function loadSchoolDirectory() {
     return;
   }
 
+  if (schoolDirectoryIsPreview) {
+    setSchoolDirectoryStatus(`Preview directory loaded for development only (${schoolDirectory.length.toLocaleString()} records). Refresh the NCES data file for complete U.S. coverage, or type your school manually below.`);
+    showManualSchoolEntry();
+    return;
+  }
+
   setSchoolDirectoryStatus(`Directory loaded (${schoolDirectory.length.toLocaleString()} schools).`);
 }
 
@@ -1439,6 +1461,8 @@ function updateSchoolSuggestionsFromQuery() {
   if (query.length < 2) {
     closeSchoolSuggestions();
     if (schoolDirectoryLoadFailed) {
+      showManualSchoolEntry();
+    } else if (schoolDirectoryIsPreview) {
       showManualSchoolEntry();
     } else if (schoolSearch.value.trim() && !hasExactDirectoryMatch(schoolSearch.value)) {
       showManualSchoolEntry();
@@ -1463,12 +1487,18 @@ function updateSchoolSuggestionsFromQuery() {
   renderSchoolSuggestions(visibleSchoolMatches);
 
   if (visibleSchoolMatches.length > 0) {
-    hideManualSchoolEntry();
+    if (!schoolDirectoryIsPreview) {
+      hideManualSchoolEntry();
+    }
     return;
   }
 
   showManualSchoolEntry();
-  setSchoolDirectoryStatus('No directory match found. You can type your school manually below.');
+  setSchoolDirectoryStatus(
+    schoolDirectoryIsPreview
+      ? 'No preview-directory match found. You can type your school manually below.'
+      : 'No directory match found. You can type your school manually below.'
+  );
 }
 
 if (schoolSearch && schoolSuggestions && schoolAbbreviation && otherSchool) {
@@ -1680,6 +1710,20 @@ if (returningAccountPicker) {
     selectedLoginAccountId = matchedAccount.id;
     updateReturningUserPanel();
   });
+  returningAccountPicker.addEventListener('keydown', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile) return;
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      tile.click();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(returningAccountPicker, tile, 1);
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(returningAccountPicker, tile, -1);
+    }
+  });
 }
 
 if (loginAccountPicker) {
@@ -1706,6 +1750,20 @@ if (loginAccountPicker) {
     if (loginEmailInput) loginEmailInput.value = normalizeEmail(matchedAccount.email);
     updateReturningUserPanel();
     if (loginPasswordInput) loginPasswordInput.focus();
+  });
+  loginAccountPicker.addEventListener('keydown', (event) => {
+    const tile = event.target instanceof Element ? event.target.closest('.login-account-tile') : null;
+    if (!tile) return;
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      tile.click();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(loginAccountPicker, tile, 1);
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      moveLoginAccountPickerFocus(loginAccountPicker, tile, -1);
+    }
   });
 }
 

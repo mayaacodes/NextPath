@@ -162,6 +162,14 @@ class SchoolDirectoryTests(unittest.TestCase):
         self.assertTrue(DEFAULT_SOURCES["public"]["url"].endswith(".zip"))
         self.assertNotIn("opendata.arcgis.com", DEFAULT_SOURCES["public"]["url"])
 
+    def test_private_source_uses_official_nces_direct_download(self):
+        self.assertEqual(
+            DEFAULT_SOURCES["private"]["url"],
+            "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PRIVATESCH_2023_24.zip",
+        )
+        self.assertTrue(DEFAULT_SOURCES["private"]["url"].endswith(".zip"))
+        self.assertNotIn("EDGE_GEOCODE_PRIVATESCHOOL_2324.csv", DEFAULT_SOURCES["private"]["url"])
+
     def test_root_index_mirrors_docs_index(self):
         docs_index = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
         root_index = (ROOT / "index.html").read_text(encoding="utf-8")

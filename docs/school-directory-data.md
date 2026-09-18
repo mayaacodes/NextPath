@@ -11,7 +11,7 @@ This file documents how NextPath refreshes the signup school/college directory f
 
 2. **NCES PSS Private School Locations (EDGE, PSS-derived)**
    - Release configured in the builder: `2023-24`
-   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PRIVATESCHOOL_2324.csv`
+   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PRIVATESCH_2023_24.zip`
    - Used for: private U.S. high schools
 
 3. **NCES Postsecondary School Locations (IPEDS-derived)**

@@ -157,8 +157,9 @@ class SchoolDirectoryTests(unittest.TestCase):
     def test_public_source_uses_official_nces_direct_download(self):
         self.assertEqual(
             DEFAULT_SOURCES["public"]["url"],
-            "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCHOOL_2425.csv",
+            "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCH_2425.zip",
         )
+        self.assertTrue(DEFAULT_SOURCES["public"]["url"].endswith(".zip"))
         self.assertNotIn("opendata.arcgis.com", DEFAULT_SOURCES["public"]["url"])
 
     def test_root_index_mirrors_docs_index(self):

@@ -469,8 +469,7 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
         type="button"
         class="login-account-tile${isSelected ? ' is-selected' : ''}"
         data-account-id="${escapeHtml(stored.id)}"
-        role="option"
-        aria-selected="${isSelected ? 'true' : 'false'}"
+        aria-pressed="${isSelected ? 'true' : 'false'}"
         aria-label="Use saved account ${escapeHtml(stored.firstName || 'Member')} (${escapeHtml(stored.email)})"
       >
         <span class="${avatarClassName}"${avatarStyle}>${avatarImageData ? '' : escapeHtml(getProfileInitial(stored.firstName))}</span>
@@ -488,7 +487,7 @@ function renderSavedAccountTiles(includeAddAccountTile = false) {
 
   return `
     ${accountTiles}
-    <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" role="option" aria-selected="false" aria-label="Add account and enter email manually">
+    <button type="button" class="login-account-tile login-account-add-tile" data-add-account="true" aria-pressed="false" aria-label="Add account and enter email manually">
       <span class="login-account-avatar login-account-add-avatar" aria-hidden="true">+</span>
       <span class="login-account-copy">
         <strong>Add account</strong>

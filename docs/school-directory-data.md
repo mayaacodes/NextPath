@@ -6,7 +6,7 @@ This file documents how NextPath refreshes the signup school/college directory f
 
 1. **NCES CCD Public School Locations (EDGE, CCD-derived)**
    - Release configured in the builder: `2024-25`
-   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCHOOL_2425.csv`
+   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCH_2425.zip`
    - Used for: public U.S. high schools
 
 2. **NCES PSS Private School Locations (EDGE, PSS-derived)**

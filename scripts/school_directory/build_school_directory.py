@@ -54,6 +54,7 @@ REQUIRED_STATE_CODES = {
     "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
     "DC",
 }
+ALLOWED_STATE_CODES = REQUIRED_STATE_CODES | {"AS", "FM", "GU", "MH", "MP", "PR", "PW", "VI", "AA", "AE", "AP"}
 MINIMUM_RECORD_COUNTS = {
     "highSchools": 20000,
     "colleges": 5000,
@@ -330,6 +331,10 @@ def build_integrity_report(
             type_counts["colleges"] += 1
         else:
             failures.append(f"Unexpected school type '{record_type}' for record {record['id']}")
+            continue
+
+        if state not in ALLOWED_STATE_CODES:
+            failures.append(f"Unexpected state code '{state}' for record {record['id']}")
             continue
 
         states_by_type[record_type].add(state)

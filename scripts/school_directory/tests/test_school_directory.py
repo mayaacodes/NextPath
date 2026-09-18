@@ -127,6 +127,15 @@ class SchoolDirectoryTests(unittest.TestCase):
             self.assertIn("Refusing to write a non-production school directory", str(error.exception))
             self.assertFalse(output_path.exists())
 
+    def test_integrity_report_rejects_unrecognized_state_codes(self):
+        rows = {key: read_rows(path) for key, path in fixture_paths().items()}
+        records = build_records(rows)
+        records[0] = {**records[0], "state": "ZZ"}
+
+        report = build_integrity_report(records, fixture_mode=True)
+
+        self.assertIn("Unexpected state code 'ZZ'", report["failures"][0])
+
     def test_download_failure_explains_that_fixture_cannot_ship(self):
         with tempfile.TemporaryDirectory() as tmp:
             destination = Path(tmp) / "public.csv"

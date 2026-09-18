@@ -368,6 +368,10 @@ def build_integrity_report(
         for spec in SPECS:
             if parsed_source_counts[spec.source_label] <= 0:
                 failures.append(f"Required source dataset '{spec.source_label}' was not successfully parsed.")
+            if source_counts[spec.source_label] <= 0:
+                failures.append(
+                    f"Required source dataset '{spec.source_label}' contributed no emitted directory records after filtering."
+                )
 
     return {
         "productionReady": not fixture_mode and not failures,

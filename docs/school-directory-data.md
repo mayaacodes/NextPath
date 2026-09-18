@@ -6,7 +6,7 @@ This file documents how NextPath refreshes the signup school/college directory f
 
 1. **NCES CCD Public School Locations (EDGE, CCD-derived)**
    - Release configured in the builder: `2024-25`
-   - URL: `https://public-nces.opendata.arcgis.com/datasets/NCES::public-school-locations-current.csv`
+   - URL: `https://data-nces.opendata.arcgis.com/api/download/v1/items/5cd68dad64f641f6b847367493e92657/csv?layers=3`
    - Used for: public U.S. high schools
 
 2. **NCES PSS Private School Locations (EDGE, PSS-derived)**
@@ -24,9 +24,8 @@ Only those official NCES/EDGE/IPEDS-derived datasets are used. The refresh pipel
 ## Build and deploy model
 
 - The checked-in `docs/data/school-directory.json` is intentionally allowed to be a **development fixture** for local/offline work.
-- Refresh the directory from the official NCES/IPEDS URLs in a network-enabled maintainer environment, then commit the resulting artifact.
-- GitHub Pages deploys validate the already-committed `docs/data/school-directory.json` before upload instead of depending on live third-party downloads.
-- If a committed authoritative refresh or fixture preview is invalid or inconsistent with the UI safeguards, the deploy job fails before upload.
+- GitHub Pages deploys rebuild the production artifact from the official NCES/IPEDS URLs before upload.
+- If the official refresh or validation fails, the deploy job fails instead of shipping a truncated or fixture-sized national directory.
 
 ## Exact refresh commands
 

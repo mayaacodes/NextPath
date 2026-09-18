@@ -301,10 +301,15 @@ def build_records(source_rows: dict[str, list[dict[str, str]]]) -> list[dict[str
     return records
 
 
-def build_integrity_report(records: list[dict[str, object]], fixture_mode: bool) -> dict[str, object]:
+def build_integrity_report(
+    records: list[dict[str, object]],
+    fixture_mode: bool,
+    source_row_counts: dict[str, int] | None = None,
+) -> dict[str, object]:
     type_counts = {"highSchools": 0, "colleges": 0}
     states_by_type = {"high-school": set(), "college": set()}
     source_counts = {spec.source_label: 0 for spec in SPECS}
+    parsed_source_counts = {spec.source_label: int((source_row_counts or {}).get(spec.source_label, 0)) for spec in SPECS}
     failures: list[str] = []
     warnings: list[str] = []
 
@@ -361,8 +366,8 @@ def build_integrity_report(records: list[dict[str, object]], fixture_mode: bool)
                 "College coverage is missing state or DC records for: " + ", ".join(missing_college_states)
             )
         for spec in SPECS:
-            if source_counts[spec.source_label] == 0:
-                failures.append(f"No records were emitted from required source dataset '{spec.source_label}'.")
+            if parsed_source_counts[spec.source_label] <= 0:
+                failures.append(f"Required source dataset '{spec.source_label}' was not successfully parsed.")
 
     return {
         "productionReady": not fixture_mode and not failures,
@@ -374,6 +379,7 @@ def build_integrity_report(records: list[dict[str, object]], fixture_mode: bool)
             "highSchools": sorted(high_school_states),
             "colleges": sorted(college_states),
         },
+        "sourceRowCounts": parsed_source_counts,
         "sourceRecordCounts": source_counts,
         "failures": failures,
         "warnings": warnings,
@@ -427,7 +433,11 @@ def emit_output(
     records = build_records(source_rows)
     high_school_count = sum(1 for record in records if record["type"] == "high-school")
     college_count = sum(1 for record in records if record["type"] == "college")
-    integrity = build_integrity_report(records, fixture_mode=fixture_mode)
+    integrity = build_integrity_report(
+        records,
+        fixture_mode=fixture_mode,
+        source_row_counts={spec.source_label: len(source_rows[spec.key]) for spec in SPECS},
+    )
     production_ready = bool(integrity["productionReady"])
     payload = {
         "generatedAt": datetime.now(timezone.utc).isoformat(),

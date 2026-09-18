@@ -96,6 +96,7 @@ class SchoolDirectoryTests(unittest.TestCase):
             self.assertTrue(any(record["type"] == "college" for record in records))
             self.assertTrue(all(record.get("id") for record in records))
             self.assertFalse(parsed["integrity"]["productionReady"])
+            self.assertGreater(parsed["integrity"]["sourceRowCounts"]["ccd-public"], 0)
             for record in records:
                 self.assertTrue(record.get("city"))
                 self.assertTrue(record.get("state"))

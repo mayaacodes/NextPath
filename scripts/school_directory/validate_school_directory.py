@@ -96,7 +96,13 @@ def main() -> None:
     record_counts = payload.get("recordCounts") or {}
     if record_counts.get("total") != len(records):
         raise AssertionError("recordCounts.total does not match records length")
-    integrity = build_integrity_report(records, fixture_mode=payload.get("fixtureMode") is True)
+    integrity = build_integrity_report(
+        records,
+        fixture_mode=payload.get("fixtureMode") is True,
+        source_row_counts=payload.get("integrity", {}).get("sourceRowCounts"),
+    )
+    if payload.get("integrity", {}).get("sourceRowCounts") and payload["integrity"]["sourceRowCounts"] != integrity["sourceRowCounts"]:
+        raise AssertionError("integrity.sourceRowCounts does not match the computed or supplied source row counts")
     if payload.get("integrity", {}).get("sourceRecordCounts") and payload["integrity"]["sourceRecordCounts"] != integrity["sourceRecordCounts"]:
         raise AssertionError("integrity.sourceRecordCounts does not match the computed directory contents")
     if payload.get("productionReady") is True and payload.get("fixtureMode") is True:

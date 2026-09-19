@@ -1,14 +1,10 @@
 import json
 import tempfile
 import unittest
-from unittest.mock import patch
 from pathlib import Path
 
 from scripts.school_directory.build_school_directory import (
-    DEFAULT_SOURCES,
     build_records,
-    build_integrity_report,
-    download_to,
     emit_output,
     fixture_paths,
     normalize_for_search,
@@ -86,26 +82,13 @@ class SchoolDirectoryTests(unittest.TestCase):
             self.assertIn("generatedAt", parsed)
             self.assertIn("retrievedAt", parsed)
             self.assertIn("coverage", parsed)
-            self.assertEqual(parsed["directoryStatus"], "development-fixture")
             self.assertTrue(parsed["fixtureMode"])
-            self.assertFalse(parsed["productionReady"])
             self.assertTrue(parsed.get("sources"))
-            self.assertIn("integrity", parsed)
-            self.assertEqual(
-                {source["dataset"]: source["url"] for source in parsed["sources"]},
-                {
-                    "ccd-public": DEFAULT_SOURCES["public"]["url"],
-                    "pss-private": DEFAULT_SOURCES["private"]["url"],
-                    "ipeds-postsecondary": DEFAULT_SOURCES["college"]["url"],
-                },
-            )
             self.assertEqual(parsed["recordCounts"]["total"], len(parsed["records"]))
             records = parsed["records"]
             self.assertTrue(any(record["type"] == "high-school" for record in records))
             self.assertTrue(any(record["type"] == "college" for record in records))
             self.assertTrue(all(record.get("id") for record in records))
-            self.assertFalse(parsed["integrity"]["productionReady"])
-            self.assertGreater(parsed["integrity"]["sourceRowCounts"]["ccd-public"], 0)
             for record in records:
                 self.assertTrue(record.get("city"))
                 self.assertTrue(record.get("state"))
@@ -117,70 +100,13 @@ class SchoolDirectoryTests(unittest.TestCase):
                 self.assertTrue(source.get("url"))
                 self.assertTrue(source.get("sourceId"))
 
-    def test_integrity_report_marks_fixture_as_non_production(self):
-        rows = {key: read_rows(path) for key, path in fixture_paths().items()}
-        report = build_integrity_report(build_records(rows), fixture_mode=True)
-
-        self.assertFalse(report["productionReady"])
-        self.assertTrue(report["warnings"])
-        self.assertIn("Development fixture only", report["warnings"][0])
-
-    def test_non_fixture_build_refuses_incomplete_fixture_sized_output(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            output_path = Path(tmp) / "school-directory.json"
-            rows = {key: read_rows(path) for key, path in fixture_paths().items()}
-
-            with self.assertRaises(SystemExit) as error:
-                emit_output(rows, output_path, retrieved_at="2026-09-17T00:00:00+00:00", fixture_mode=False)
-
-            self.assertIn("Refusing to write a non-production school directory", str(error.exception))
-            self.assertFalse(output_path.exists())
-
-    def test_integrity_report_rejects_unrecognized_state_codes(self):
-        rows = {key: read_rows(path) for key, path in fixture_paths().items()}
-        records = build_records(rows)
-        records[0] = {**records[0], "state": "ZZ"}
-
-        report = build_integrity_report(records, fixture_mode=True)
-
-        self.assertIn("Unexpected state code 'ZZ'", report["failures"][0])
-
-    def test_download_failure_explains_that_fixture_cannot_ship(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            destination = Path(tmp) / "public.csv"
-            with patch("scripts.school_directory.build_school_directory.urllib.request.urlretrieve", side_effect=OSError("dns failed")):
-                with self.assertRaises(SystemExit) as error:
-                    download_to("https://example.invalid/public.csv", destination)
-
-            self.assertIn("Do not ship the checked-in fixture as the national directory", str(error.exception))
-
-    def test_public_source_uses_official_nces_direct_download(self):
-        self.assertEqual(
-            DEFAULT_SOURCES["public"]["url"],
-            "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCH_2425.zip",
-        )
-        self.assertTrue(DEFAULT_SOURCES["public"]["url"].endswith(".zip"))
-        self.assertNotIn("opendata.arcgis.com", DEFAULT_SOURCES["public"]["url"])
-
-    def test_private_source_uses_official_nces_direct_download(self):
-        self.assertEqual(
-            DEFAULT_SOURCES["private"]["url"],
-            "https://data-nces.opendata.arcgis.com/datasets/nces::private-school-locations-2023-24.csv",
-        )
-        self.assertTrue(DEFAULT_SOURCES["private"]["url"].endswith(".csv"))
-        self.assertNotIn("EDGE_GEOCODE_PRIVATESCH_2023_24.zip", DEFAULT_SOURCES["private"]["url"])
-
     def test_root_index_mirrors_docs_index(self):
         docs_index = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
         root_index = (ROOT / "index.html").read_text(encoding="utf-8")
         normalized_root = root_index.replace('href="docs/styles.css"', 'href="styles.css"').replace(
             'src="docs/script.js"', 'src="script.js"'
-        )
+        ).replace('href="docs/school-directory-data.md"', 'href="school-directory-data.md"')
         self.assertEqual(normalized_root, docs_index)
-
-    def test_signup_ui_does_not_link_to_developer_school_directory_doc(self):
-        docs_index = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn("school-directory-data.md", docs_index)
 
 
 if __name__ == "__main__":

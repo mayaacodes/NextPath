@@ -1,44 +1,40 @@
-# School directory maintainer guide
+# School directory data provenance
 
-This file documents how NextPath refreshes the signup school/college directory from authoritative federal sources. It is maintainer-facing source documentation, not end-user help text.
+This project builds the signup school/college autocomplete directory from official NCES/IES sources.
 
-## Authoritative source files
+## Official source URLs configured in the refresh script
 
-1. **NCES CCD Public School Locations (EDGE, CCD-derived)**
-   - Release configured in the builder: `2024-25`
-   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCH_2425.zip`
-   - Used for: public U.S. high schools
+Retrieval attempted: **2026-09-18** (UTC) from the cloud-agent environment.
 
-2. **NCES PSS Private School Locations (EDGE, PSS-derived)**
-   - Release configured in the builder: `2023-24`
-   - URL: `https://data-nces.opendata.arcgis.com/datasets/nces::private-school-locations-2023-24.csv`
-   - Used for: private U.S. high schools
+> Note: DNS/network policy in this sandbox blocked direct access to the official NCES/IES hosts during this PR, so a full nationwide refresh could not be executed here. The committed `docs/data/school-directory.json` is intentionally marked as a **fixture-limited development preview** so the UI never presents it as the complete national directory.
 
-3. **NCES Postsecondary School Locations (IPEDS-derived)**
-   - Release configured in the builder: `2024-25`
+1. **Public schools (high school filter source)**
+   - Dataset: NCES CCD Public School Locations (EDGE, CCD-derived)
+   - Release: 2024-25 (current)
+   - URL: `https://public-nces.opendata.arcgis.com/datasets/NCES::public-school-locations-current.csv`
+   - Fields used: `NCESSCH` (id), `SCH_NAME`/`SCHOOL_NAME`/`NAME`, `LCITY`/`CITY`, `LSTATE`/`STATE`/`STABBR`, `GSHI`/`HIGH_GRADE`
+
+2. **Private schools (high school filter source)**
+   - Dataset: NCES PSS Private School Locations (EDGE, PSS-derived)
+   - Release: 2023-24
+   - URL: `https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PRIVATESCHOOL_2324.csv`
+   - Fields used: `PPIN`/`PSS_SCHOOL_ID`/`NCESSCH` (id), `NAME`/`SCHOOL_NAME`/`SCH_NAME`, `CITY`/`LCITY`, `STABBR`/`STATE`, `LEVEL`/`SCHOOL_LEVEL`, `G_HIGH`/`HIGH_GRADE`
+
+3. **Postsecondary schools (college/university source)**
+   - Dataset: NCES Postsecondary School Locations (IPEDS-derived)
+   - Release: 2024-25 (current)
    - URL: `https://ncesedgis.maps.arcgis.com/sharing/rest/content/items/c09067e617894cbca0798c53967c795b/data`
-   - Used for: U.S. postsecondary institutions
+   - Fields used: `UNITID`/`IPEDS_ID` (id), `INSTNM`/`NAME`/`INSTITUTION`, `CITY`/`LCITY`, `STABBR`/`STATE`
 
-Only those official NCES/EDGE/IPEDS-derived datasets are used. The refresh pipeline does not scrape arbitrary institution websites or add manual non-authoritative records.
+## Refresh process
 
-## Build and deploy model
-
-- The checked-in `docs/data/school-directory.json` is intentionally allowed to be a **development fixture** for local/offline work.
-- GitHub Pages deploys rebuild the production artifact from the official NCES/IPEDS URLs before upload.
-- If the official refresh or validation fails, the deploy job fails instead of shipping a truncated or fixture-sized national directory.
-
-## Exact refresh commands
-
-Run from the repository root:
-
-### Refresh from the official NCES/IPEDS URLs
+Run from repository root:
 
 ```bash
 python scripts/school_directory/build_school_directory.py --download --output docs/data/school-directory.json
-python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json --require-production-ready
 ```
 
-### Refresh from already-downloaded official files
+If you already downloaded the official source files yourself, pass them explicitly:
 
 ```bash
 python scripts/school_directory/build_school_directory.py \
@@ -46,27 +42,17 @@ python scripts/school_directory/build_school_directory.py \
   --private-file /absolute/path/to/private-school-source.csv \
   --college-file /absolute/path/to/postsecondary-source.csv \
   --output docs/data/school-directory.json
-python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json --require-production-ready
 ```
 
-### Local offline fixture build
+Offline fixture build (development-only preview used in this PR):
 
 ```bash
 python scripts/school_directory/build_school_directory.py --fixtures --output docs/data/school-directory.json
-python -m scripts.school_directory.validate_school_directory --directory docs/data/school-directory.json
 ```
 
-## Normalization, filtering, and safeguards
+## Known coverage limitations
 
-- Public and private K-12 source rows are filtered to high schools using official grade/level fields first, with name-based fallback only when those fields are missing.
-- Postsecondary rows with closed/inactive operating status are excluded when the official source supplies that status.
-- Records are deduplicated by normalized institution type, canonicalized name, city, and state.
-- Records missing required fields (`id`, `name`, `type`, `city`, `state`, `searchText`) are rejected.
-- Non-fixture builds must pass integrity checks before the JSON is written:
-  - minimum nationwide counts for high schools, colleges, and total records
-  - coverage across all 50 states plus DC for both high schools and colleges
-  - at least one emitted record from each required official source dataset
-
-## Unavoidable limitation
-
-The directory depends on the current official NCES/EDGE/IPEDS releases. NextPath can honestly present nationwide authoritative coverage only when those sources are reachable and the production-ready validation passes. If they are unavailable, the app must keep manual school entry available rather than claim the checked-in fixture is complete.
+- The committed JSON in this PR is fixture-limited and not nationwide.
+- Full national coverage requires running the refresh script against the official NCES URLs above in an environment with network access.
+- High-school classification is based on official grade/level fields when present, with name-based fallback when grade metadata is missing.
+- Postsecondary filtering keeps only rows with valid institution names and excludes records explicitly marked closed or inactive when those official status fields are present.

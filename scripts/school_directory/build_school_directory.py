@@ -35,7 +35,7 @@ DEFAULT_SOURCES = {
         "release": "2024-25",
     },
     "private": {
-        "url": "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PRIVATESCH_2023_24.zip",
+        "url": "https://data-nces.opendata.arcgis.com/datasets/nces::private-school-locations-2023-24.csv",
         "dataset": "NCES PSS Private School Locations",
         "release": "2023-24",
     },

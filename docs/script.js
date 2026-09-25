@@ -31,6 +31,8 @@ const peopleMatches = document.getElementById('peopleMatches');
 const peoplePlaceholderNote = document.getElementById('peoplePlaceholderNote');
 const accountContext = document.getElementById('accountContext');
 const settingsOwnerNote = document.getElementById('settingsOwnerNote');
+const darkModeToggle = document.getElementById('darkModeToggle');
+const darkModeState = document.getElementById('darkModeState');
 const settingsAge = document.getElementById('settingsAge');
 const settingsName = document.getElementById('settingsName');
 const settingsEmail = document.getElementById('settingsEmail');
@@ -73,6 +75,9 @@ const appState = {
 
 const ACCOUNT_STORAGE_KEY = 'nextpath.accounts.v1';
 const ACTIVE_ACCOUNT_STORAGE_KEY = 'nextpath.activeAccount.v1';
+const THEME_STORAGE_KEY = 'nextpath.theme.v1';
+const LIGHT_THEME = 'light';
+const DARK_THEME = 'dark';
 
 const pathwayMap = {
   'A community': {
@@ -260,6 +265,42 @@ function getActiveAccountId() {
   } catch (error) {
     return '';
   }
+}
+
+function getStoredThemePreference() {
+  try {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    return storedTheme === DARK_THEME || storedTheme === LIGHT_THEME ? storedTheme : '';
+  } catch (error) {
+    return '';
+  }
+}
+
+function saveThemePreference(theme) {
+  try {
+    if (theme === DARK_THEME || theme === LIGHT_THEME) {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+  } catch (error) {
+    // Ignore storage failures in restricted environments.
+  }
+}
+
+function syncThemeToggle(theme) {
+  if (!darkModeToggle) return;
+  const isDark = theme === DARK_THEME;
+  darkModeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+  darkModeToggle.classList.toggle('is-on', isDark);
+  if (darkModeState) {
+    darkModeState.textContent = isDark ? 'On' : 'Off';
+  }
+}
+
+function applyTheme(theme) {
+  const resolvedTheme = theme === DARK_THEME ? DARK_THEME : LIGHT_THEME;
+  document.documentElement.setAttribute('data-theme', resolvedTheme);
+  syncThemeToggle(resolvedTheme);
+  return resolvedTheme;
 }
 
 async function createPasswordHash(password) {
@@ -1687,6 +1728,15 @@ if (saveSettingsButton) {
   });
 }
 
+if (darkModeToggle) {
+  darkModeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') === DARK_THEME ? DARK_THEME : LIGHT_THEME;
+    const nextTheme = currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
+    applyTheme(nextTheme);
+    saveThemePreference(nextTheme);
+  });
+}
+
 if (returningLoginButton) {
   returningLoginButton.addEventListener('click', () => {
     if (!selectedLoginAccountId) {
@@ -1844,6 +1894,10 @@ if (resumeOnboardingButton) {
     setAppNotice('You can now edit every part of your signup flow.');
   });
 }
+
+const initialTheme = getStoredThemePreference()
+  || (document.documentElement.getAttribute('data-theme') === DARK_THEME ? DARK_THEME : LIGHT_THEME);
+applyTheme(initialTheme);
 
 appState.storedAccounts = loadStoredAccounts();
 appState.hasCreatedAccount = appState.storedAccounts.length > 0;

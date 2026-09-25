@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NextPath | Support Communities</title>
     <meta name="description" content="Welcome to NextPath. Find age-appropriate support communities, local groups, and resources that match what you're going through." />
+    <script>
+      (function () {
+        try {
+          var storedTheme = window.localStorage.getItem('nextpath.theme.v1');
+          if (storedTheme === 'dark' || storedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', storedTheme);
+          }
+        } catch (error) {
+          // Ignore storage failures in restricted environments.
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="docs/styles.css" />
   </head>
   <body>
@@ -543,6 +555,26 @@
               <section class="profile-side">
                 <h3>Settings</h3>
                 <p id="settingsOwnerNote" class="owner-note">Only the account owner can use these settings.</p>
+
+                <div class="theme-setting-row">
+                  <div class="theme-setting-copy">
+                    <p id="darkModeLabel" class="field-label theme-setting-label">Dark mode</p>
+                    <p class="field-help">Applies across this browser and stays on after reloads.</p>
+                  </div>
+                  <button
+                    id="darkModeToggle"
+                    class="theme-switch"
+                    type="button"
+                    role="switch"
+                    aria-checked="false"
+                    aria-labelledby="darkModeLabel darkModeState"
+                  >
+                    <span class="theme-switch-track" aria-hidden="true">
+                      <span class="theme-switch-thumb"></span>
+                    </span>
+                    <span id="darkModeState" class="theme-switch-text">Off</span>
+                  </button>
+                </div>
 
                 <label class="field-label" for="settingsAge">Age</label>
                 <input id="settingsAge" type="number" min="7" max="100" class="text-field" disabled />

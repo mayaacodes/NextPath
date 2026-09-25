@@ -193,8 +193,18 @@ button {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
   gap: 2px;
   text-align: left;
+}
+
+.account-chip-copy strong,
+.account-chip-copy span {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .account-chip-copy strong {
@@ -1064,7 +1074,7 @@ input[type="range"] {
   padding: 10px 12px;
   border: 1px solid rgba(44,142,217,0.22);
   border-radius: 16px;
-  background: rgba(255,255,255,0.92);
+  background: var(--surface-strong);
   color: var(--text-primary);
   text-align: left;
   cursor: pointer;

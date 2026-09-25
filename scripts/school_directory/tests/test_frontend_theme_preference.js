@@ -116,6 +116,13 @@ function testDocsMarkupIncludesThemeToggle() {
   assert(html.includes("nextpath.theme.v1"), 'Expected docs/index.html to preload the stored theme preference');
 }
 
+function testAccountCardsUseThemeAwareStyles() {
+  const stylesPath = path.resolve(__dirname, '../../../docs/styles.css');
+  const css = fs.readFileSync(stylesPath, 'utf8');
+  assert(css.includes('.login-account-tile {') && css.includes('background: var(--surface-strong);'), 'Expected login account cards to use theme-aware surface colors');
+  assert(css.includes('.account-chip-copy strong,\n.account-chip-copy span {') && css.includes('text-overflow: ellipsis;'), 'Expected account summary text to keep truncation safeguards for long secondary labels');
+}
+
 function testApplyThemeUpdatesControlState() {
   const context = buildContext();
   const api = loadThemeSnippet(context);
@@ -159,6 +166,7 @@ function testStorageFailuresFallBackSafely() {
 
 (() => {
   testDocsMarkupIncludesThemeToggle();
+  testAccountCardsUseThemeAwareStyles();
   testApplyThemeUpdatesControlState();
   testThemePreferencePersistence();
   testStorageFailuresFallBackSafely();
